@@ -266,7 +266,7 @@ function updateMoManAnimation() {
                 jumpFrameName = `Mo man Sprung_${frameNumber}.png`;
             }
 
-            moCharacter.src = `Mo man Sprung Pose/${jumpFrameName}`;
+            moCharacter.src = `Mo_man_Sprung_Pose/${jumpFrameName}`;
         }
         // Don't auto-increment jump frame - it will be controlled by physics
     } else if (currentAnimation === 'running') {
