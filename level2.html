@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Bytes Level 2 - KI-Feature Memory</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="level2.css">
+</head>
+<body>
+    <div class="level2-container">
+        <!-- Game Header -->
+        <header class="memory-header">
+            <div class="level-info">
+                <h1 class="level-title">Level 2: KI-Feature Memory</h1>
+                <p class="level-subtitle">Finde die Mercedes KI-Features und ihre Anwendungen!</p>
+            </div>
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Züge:</span>
+                    <span id="moveCount" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Paare:</span>
+                    <div class="stat-values">
+                        <span id="pairCount" class="stat-value">-</span>
+                        <span class="stat-total" id="pairTotal" style="display: none;">/ <span id="totalPairs">12</span></span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Zeit:</span>
+                    <span id="timeDisplay" class="stat-value">00:00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mo Man Game Host -->
+        <div class="mo-host-container">
+            <div id="moHost" class="mo-host">
+                <img src="Mo man Stand Pose/Mo man Stand Pose_00000.png" alt="Mo Man Host" class="mo-host-img">
+            </div>
+            <div class="mo-speech-bubble" id="moSpeech">
+                <p>Willkommen zum KI-Memory! Finde alle Mercedes KI-Features und lerne, was sie können!</p>
+                <button id="understoodButton" class="understood-btn" style="display: none;">Verstanden</button>
+            </div>
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div id="difficultySelection" class="game-phase active">
+            <div class="difficulty-panel">
+                <h2>Wähle deinen Schwierigkeitsgrad</h2>
+                <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="easy">
+                        <div class="difficulty-icon">Einsteiger</div>
+                        <div class="difficulty-title">Einsteiger</div>
+                        <div class="difficulty-desc">8 Karten (4 Paare)</div>
+                        <div class="difficulty-features">Grundlegende KI-Features</div>
+                        <div class="difficulty-status" id="easyStatus"></div>
+                    </button>
+
+                    <button class="difficulty-btn" data-difficulty="medium">
+                        <div class="difficulty-icon">Fortgeschritten</div>
+                        <div class="difficulty-title">Fortgeschritten</div>
+                        <div class="difficulty-desc">16 Karten (8 Paare)</div>
+                        <div class="difficulty-features">Erweiterte Mercedes KI</div>
+                        <div class="difficulty-status" id="mediumStatus"></div>
+                    </button>
+
+                    <button class="difficulty-btn" data-difficulty="hard">
+                        <div class="difficulty-icon">Experte</div>
+                        <div class="difficulty-title">Experte</div>
+                        <div class="difficulty-desc">24 Karten (12 Paare)</div>
+                        <div class="difficulty-features">Alle MBUX Features</div>
+                        <div class="difficulty-status" id="hardStatus"></div>
+                    </button>
+                </div>
+
+                <div class="back-button-container">
+                    <button id="backToLevels" class="back-btn">Zurück zur Levelauswahl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Game Board -->
+        <div id="gameBoard" class="game-phase">
+            <div class="memory-board-container">
+                <div class="board-header">
+                    <button id="restartGame" class="control-btn">Neustart</button>
+                    <button id="backToDifficulty" class="control-btn">Zurück</button>
+                </div>
+
+                <div id="memoryBoard" class="memory-board">
+                    <!-- Cards will be generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victoryScreen" class="game-phase">
+            <div class="victory-panel">
+                <div class="victory-animation">
+                    <h2 class="victory-title">Geschafft!</h2>
+                    <div class="victory-stats">
+                        <div class="victory-stat">
+                            <span class="victory-label">Züge:</span>
+                            <span id="finalMoves" class="victory-value">0</span>
+                        </div>
+                        <div class="victory-stat">
+                            <span class="victory-label">Zeit:</span>
+                            <span id="finalTime" class="victory-value">00:00</span>
+                        </div>
+                    </div>
+
+                    <div class="learned-features">
+                        <h3>Was du gelernt hast:</h3>
+                        <div id="learnedList" class="learned-list">
+                            <!-- Will be populated with discovered features -->
+                        </div>
+                    </div>
+
+                    <div class="victory-actions">
+                        <button id="playAgain" class="victory-btn primary">Nochmal spielen</button>
+                        <button id="chooseDifficulty" class="victory-btn">Schwierigkeitsgrad wählen</button>
+                        <button id="backToHome" class="victory-btn">Zur Startseite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Information Modal -->
+        <div id="featureModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="featureTitle">KI-Feature</h3>
+                    <button class="modal-close" id="modalClose">X</button>
+                </div>
+                <div class="modal-body">
+                    <div class="feature-info">
+                        <div class="feature-icon-large" id="featureIconLarge">
+                            <!-- SVG will be inserted here -->
+                        </div>
+                        <div class="feature-description">
+                            <h4 id="featureSubtitle">Untertitel</h4>
+                            <p id="featureDesc">Beschreibung des KI-Features</p>
+                            <div class="feature-benefits">
+                                <h5>Vorteile für dich:</h5>
+                                <ul id="featureBenefits">
+                                    <!-- Benefits will be listed here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="continueGame" class="modal-btn">Weiter spielen</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="level2.js"></script>
+</body>
+</html>

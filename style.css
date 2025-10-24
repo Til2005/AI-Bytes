@@ -1,0 +1,922 @@
+@font-face {
+    font-family: 'Ithaca';
+    src: url('assets/fonts/Ithaca-LVB75.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Respawn UI Animation */
+@keyframes respawnPulse {
+    0% {
+        opacity: 0.9;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+                    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+                    0 0 15px rgba(60, 58, 165, 0.4);
+    }
+    100% {
+        opacity: 0.9;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+                    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+}
+
+/* Coin Animations */
+@keyframes coinSpin {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(90deg) scaleX(0.5); }
+    100% { transform: rotateY(180deg); }
+}
+
+@keyframes coinFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes coinCollect {
+    0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) translateY(-20px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0) translateY(-40px);
+        opacity: 0;
+    }
+}
+
+@keyframes collectEffect {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+:root {
+    --indigo: #4b0074;
+    --amethyst: #A86AFF;
+    --maya-blue: #67C7FF;
+    --persian-blue: #3c3aa5;
+    --russian-blue: #151037;
+    --saffron: #F5C03B;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Hide scrollbar for webkit browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: background 0.5s ease;
+    width: 100vw;
+    margin: 0;
+    position: relative;
+    zoom: 1;
+    transform-origin: top center;
+}
+
+body.bg-gradient {
+    background: linear-gradient(90deg, #2d1b69 0%, #7b2d8e 25%, #9b4b9f 50%, #5b8cc7 75%, #67c7ff 100%);
+}
+
+body.bg-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Default gradient */
+body:not(.bg-image) {
+    background: linear-gradient(90deg, #2d1b69 0%, #7b2d8e 25%, #9b4b9f 50%, #5b8cc7 75%, #67c7ff 100%);
+}
+
+.container {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.header {
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+}
+
+.header-buttons {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    display: flex;
+    gap: 15px;
+}
+
+.settings-btn,
+.achievements-btn {
+    background: var(--indigo);
+    border: 2px solid var(--amethyst);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.settings-btn:hover {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    transform: rotate(90deg);
+}
+
+.achievements-btn:hover {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    transform: scale(1.1);
+}
+
+.logo-container {
+    position: relative;
+    display: inline-block;
+    height: 180px;
+    cursor: pointer;
+    width: auto;
+}
+
+.logo {
+    height: 180px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.3s ease;
+}
+
+.logo-white {
+    opacity: 0;
+}
+
+.logo-dark {
+    opacity: 1;
+}
+
+.logo-container:hover .logo-white {
+    opacity: 1;
+}
+
+.logo-container:hover .logo-dark {
+    opacity: 0;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 0;
+    gap: 40px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.main-title {
+    font-family: 'Ithaca', serif;
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    line-height: 1.2;
+}
+
+.main-title span {
+    display: inline-block;
+    transition: color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+.main-title span:hover {
+    color: var(--maya-blue);
+    transform: translateY(-3px);
+}
+
+.main-title span.space {
+    cursor: default;
+}
+
+.main-title span.space:hover {
+    color: white;
+    transform: none;
+}
+
+span.highlighted {
+    color: #A86AFF !important; /* Purple color */
+    text-shadow: 0 0 10px #A86AFF, 2px 2px 4px rgba(0, 0, 0, 0.7);
+    transform: translateY(-3px);
+}
+
+.title-container {
+    position: relative;
+    display: inline-block;
+}
+
+.mo-character {
+    position: absolute;
+    width: 60px;
+    height: auto;
+    z-index: 10;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    top: -70px;
+    left: 0;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--maya-blue);
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero-character {
+    flex-shrink: 0;
+}
+
+.character {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.levels {
+    padding: 40px 0;
+}
+
+.levels-title {
+    font-family: 'Ithaca', serif;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--saffron);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.level-card {
+    background: linear-gradient(145deg, rgba(168, 106, 255, 0.2), rgba(103, 199, 255, 0.1));
+    border: 2px solid var(--amethyst);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.level-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(245, 192, 59, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.level-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--saffron);
+    box-shadow: 0 10px 30px rgba(245, 192, 59, 0.3);
+}
+
+.level-card:hover::before {
+    transform: translateX(100%);
+}
+
+.level-number {
+    font-family: 'Ithaca', serif;
+    font-size: 2rem;
+    color: var(--saffron);
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.level-title {
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.level-description {
+    color: var(--maya-blue);
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.level-status {
+    display: inline-block;
+    background: var(--saffron);
+    color: var(--russian-blue);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.level-card.available .level-status {
+    background: #666;
+    color: #ccc;
+    animation: none;
+}
+
+.level-card.tba {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.level-card.tba:hover {
+    transform: none;
+    border-color: var(--amethyst);
+    box-shadow: none;
+}
+
+.level-card.tba .level-status {
+    background: var(--persian-blue);
+    color: var(--maya-blue);
+}
+
+/* Secret Level Styles */
+.level-card.secret {
+    background: linear-gradient(145deg, rgba(75, 0, 116, 0.4), rgba(21, 16, 55, 0.6));
+    border: 2px solid rgba(245, 192, 59, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.level-card.secret::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(245, 192, 59, 0.1) 50%, transparent 70%);
+    animation: secretShine 3s infinite;
+    z-index: 1;
+}
+
+.level-card.secret > * {
+    position: relative;
+    z-index: 2;
+}
+
+.level-card.secret.locked {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.level-card.secret.locked:hover {
+    transform: none;
+    border-color: rgba(245, 192, 59, 0.5);
+    box-shadow: none;
+}
+
+.secret-symbol {
+    color: var(--saffron);
+    font-size: 3rem !important;
+    text-shadow: 0 0 20px var(--saffron);
+    animation: secretPulse 2s infinite alternate;
+}
+
+.level-card.secret .level-title {
+    color: var(--saffron);
+    text-shadow: 0 0 10px rgba(245, 192, 59, 0.5);
+}
+
+.level-card.secret .level-description {
+    color: var(--maya-blue);
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.level-card.secret.locked .level-status {
+    background: var(--russian-blue);
+    color: var(--saffron);
+    border: 1px solid var(--saffron);
+}
+
+.level-card.secret.unlocked .level-status {
+    background: linear-gradient(45deg, var(--saffron), var(--amethyst));
+    color: var(--russian-blue);
+    animation: pulse 2s infinite;
+}
+
+@keyframes secretShine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+@keyframes secretPulse {
+    0% { transform: scale(1); text-shadow: 0 0 20px var(--saffron); }
+    100% { transform: scale(1.1); text-shadow: 0 0 30px var(--saffron), 0 0 40px var(--saffron); }
+}
+
+/* Logo Animation Easter Egg CSS */
+@keyframes glitchScan {
+    0% { transform: translateY(-100vh); }
+    100% { transform: translateY(100vh); }
+}
+
+@keyframes logoGlitch {
+    0%, 100% {
+        transform: translateX(0);
+        filter: hue-rotate(0deg);
+    }
+    10% {
+        transform: translateX(-2px) skew(-1deg);
+        filter: hue-rotate(90deg);
+    }
+    20% {
+        transform: translateX(2px) skew(1deg);
+        filter: hue-rotate(180deg);
+    }
+    30% {
+        transform: translateX(-1px) skew(-0.5deg);
+        filter: hue-rotate(270deg);
+    }
+    40% {
+        transform: translateX(1px) skew(0.5deg);
+        filter: hue-rotate(0deg);
+    }
+    50% {
+        transform: translateX(0) scale(1.05);
+        filter: contrast(2) brightness(1.5);
+    }
+    60% {
+        transform: translateX(-1px) scale(0.95);
+        filter: contrast(0.5) brightness(0.5);
+    }
+    70% {
+        transform: translateX(1px) skew(1deg);
+        filter: hue-rotate(180deg) invert(1);
+    }
+    80% {
+        transform: translateX(-2px) skew(-1deg);
+        filter: hue-rotate(90deg);
+    }
+    90% {
+        transform: translateX(2px) scale(1.02);
+        filter: hue-rotate(270deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.footer {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--maya-blue);
+    border-top: 1px solid rgba(168, 106, 255, 0.3);
+    margin-top: 40px;
+}
+
+/* Disable all responsive behavior to maintain fixed layout */
+@media (max-width: 1200px) {
+    body {
+        width: 1200px;
+        min-width: 1200px;
+    }
+
+    .container {
+        width: 1200px;
+        min-width: 1200px;
+    }
+}
+
+/* Keep original media queries but override with fixed sizes */
+@media (max-width: 768px) {
+    body {
+        width: 1200px;
+        min-width: 1200px;
+    }
+
+    .container {
+        width: 1200px;
+        min-width: 1200px;
+    }
+
+    .main-title {
+        font-size: 3.5rem; /* Keep original desktop size */
+    }
+
+    .levels-title {
+        font-size: 2.5rem; /* Keep original desktop size */
+    }
+
+    .logo {
+        height: 180px; /* Keep original desktop size */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        width: 1200px;
+        min-width: 1200px;
+    }
+
+    .container {
+        width: 1200px;
+        min-width: 1200px;
+    }
+
+    .main-title {
+        font-size: 3.5rem; /* Keep original desktop size */
+    }
+
+    .logo {
+        height: 180px; /* Keep original desktop size */
+    }
+}
+
+/* Settings Popup Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.popup-content {
+    background: linear-gradient(145deg, var(--indigo), var(--persian-blue));
+    border: 2px solid var(--amethyst);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(168, 106, 255, 0.3);
+    padding-bottom: 15px;
+}
+
+.popup-header .header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.popup-header h3 {
+    color: var(--saffron);
+    font-family: 'Ithaca', serif;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--maya-blue);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--saffron);
+}
+
+.reset-achievements-btn {
+    background: var(--persian-blue);
+    border: 2px solid var(--amethyst);
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.reset-achievements-btn:hover {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    color: var(--russian-blue);
+}
+
+.background-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.bg-option {
+    text-align: center;
+    cursor: pointer;
+    padding: 15px;
+    border: 2px solid transparent;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    background: rgba(168, 106, 255, 0.3);
+}
+
+.bg-option:hover {
+    border-color: var(--maya-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(103, 199, 255, 0.3);
+}
+
+.bg-option.active {
+    border-color: var(--saffron);
+    background: rgba(245, 192, 59, 0.2);
+}
+
+.bg-preview {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(168, 106, 255, 0.3);
+}
+
+.gradient-preview {
+    background: linear-gradient(90deg, #2d1b69 0%, #7b2d8e 25%, #9b4b9f 50%, #5b8cc7 75%, #67c7ff 100%);
+}
+
+.bg-option span {
+    display: block;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .popup-content {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .background-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .bg-preview {
+        height: 60px;
+    }
+}
+
+
+
+/* Hide scrollbar for popup */
+.popup-content::-webkit-scrollbar {
+    display: none;
+}
+
+.popup-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Achievement Popup Styles */
+.achievements-popup {
+    max-width: 800px;
+    max-height: 80vh;
+}
+
+.achievements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.achievement-category {
+    border: 1px solid rgba(168, 106, 255, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    background: rgba(168, 106, 255, 0.1);
+}
+
+.category-title {
+    font-family: 'Ithaca', serif;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    text-align: center;
+    color: white;
+}
+
+.easy-title {
+    color: #4CAF50;
+}
+
+.normal-title {
+    color: #FFC107;
+}
+
+.hard-title {
+    color: #F44336;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.achievement-card {
+    background: linear-gradient(145deg, rgba(75, 0, 116, 0.4), rgba(21, 16, 55, 0.6));
+    border: 2px solid rgba(168, 106, 255, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card.unlocked {
+    border-color: var(--saffron);
+    background: linear-gradient(145deg, rgba(245, 192, 59, 0.2), rgba(168, 106, 255, 0.2));
+    box-shadow: 0 0 20px rgba(245, 192, 59, 0.3);
+}
+
+.achievement-card.unlocked::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(245, 192, 59, 0.1) 50%, transparent 70%);
+    animation: achievementShine 3s infinite;
+    z-index: 1;
+}
+
+.achievement-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.achievement-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.achievement-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.achievement-description {
+    font-size: 0.9rem;
+    color: var(--maya-blue);
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.achievement-progress {
+    font-size: 0.8rem;
+    color: var(--saffron);
+    background: rgba(245, 192, 59, 0.2);
+    padding: 4px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+    filter: grayscale(0.7);
+}
+
+.achievement-card.locked .achievement-icon {
+    filter: grayscale(1);
+}
+
+@keyframes achievementShine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+@keyframes achievementPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .achievements-popup {
+        max-width: 95vw;
+        margin: 10px;
+    }
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .achievement-card {
+        padding: 15px;
+    }
+}

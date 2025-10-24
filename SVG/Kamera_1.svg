@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-2, .cls-3 {
+        isolation: isolate;
+      }
+
+      .cls-3 {
+        font-family: MBCorpoSText-Bold, 'MB Corpo S Text';
+        font-size: 12px;
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <g class="cls-2">
+    <text class="cls-3" transform="translate(11.78 57.09)"><tspan x="0" y="0">360</tspan></text>
+  </g>
+  <circle cx="40.6" cy="39.57" r="7.75"/>
+  <path d="M26.17,31.01c-1,0-1.81.81-1.81,1.81s.81,1.81,1.81,1.81,1.81-.81,1.81-1.81-.81-1.81-1.81-1.81Z"/>
+  <path d="M57.18,25.41h-5.92v-1.13c0-2.76-2.24-5-5-5h-11.33c-2.76,0-5,2.24-5,5v1.13h-5.92c-2.76,0-5,2.24-5,5v19.4c.75-1.13,1.85-1.73,3-1.85v-17.55c0-1.1.9-2,2-2h8.92v-4.13c0-1.1.9-2,2-2h11.33c1.1,0,2,.9,2,2v4.13h8.92c1.1,0,2,.9,2,2v18.53c0,1.1-.9,2-2,2h-24.29c.18.61.29,1.31.29,2.14,0,.3-.02.59-.05.86h24.04c2.76,0,5-2.24,5-5v-18.53c0-2.76-2.24-5-5-5h0Z"/>
+  <circle class="cls-1" cx="32.85" cy="48.93" r=".91"/>
+</svg>

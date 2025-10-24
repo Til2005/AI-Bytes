@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1: Nicht suchen, Prompten! - AI Bytes</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="level1.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-buttons">
+                <button class="back-btn" onclick="window.location.href='index.html'">← Zurück zur Levelauswahl</button>
+            </div>
+            <div class="logo-container">
+                <img src="assets/images/_logo_horizontal_dark.png" alt="AI Bytes Logo" class="logo logo-dark">
+                <img src="assets/images/_logo_horizontal_white.png" alt="AI Bytes Logo" class="logo logo-white">
+            </div>
+        </header>
+
+        <!-- Mo Man Game Guide -->
+        <div class="mo-host-container">
+            <div id="moHost" class="mo-host">
+                <img src="Mo man Stand Pose/Mo man Stand Pose_00000.png" alt="Mo Man Host" class="mo-host-img">
+            </div>
+            <div class="mo-speech-bubble" id="moSpeech">
+                <p>Hey! Ich bin Mo Man, dein persönlicher AI-Guide! 🤖 Bereit für dein erstes Prompt-Training?</p>
+                <button id="understoodButton" class="understood-btn" style="display: none;">Verstanden</button>
+            </div>
+        </div>
+
+        <main class="game-container">
+            <!-- Game HUD -->
+            <div class="game-hud">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">Challenge 1/5</span>
+                </div>
+                <div class="score-container">
+                    <span class="score-label">Score:</span>
+                    <span class="score-value" id="scoreValue">0</span>
+                </div>
+            </div>
+
+            <!-- Game Intro Screen -->
+            <div class="game-screen active" id="introScreen">
+                <div class="intro-content">
+                    <h1 class="game-title">Level 1: Nicht suchen, Prompten!</h1>
+                    <p class="game-description">Lerne in 5 spannenden Challenges, wie du AI richtig "promptest"!</p>
+                    <button class="start-button" onclick="startGame()">🚀 Spiel starten!</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Screen -->
+            <div class="game-screen" id="tutorialScreen">
+                <div class="tutorial-container">
+                    <div class="tutorial-header">
+                        <h2 class="tutorial-title" id="tutorialTitle">Tutorial</h2>
+                        <p class="tutorial-concept" id="tutorialConcept">Konzept</p>
+                    </div>
+
+                    <div class="tutorial-content">
+                        <div class="examples-section" id="tutorialExamples">
+                            <!-- Examples will be inserted here -->
+                        </div>
+
+                        <div class="principle-box">
+                            <h3>💡 Merke dir:</h3>
+                            <p id="tutorialPrinciple">Prinzip hier...</p>
+                        </div>
+                    </div>
+
+                    <div class="tutorial-actions">
+                        <button class="understand-button" onclick="startChallenge()">✅ Verstanden! Challenge starten</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenge Screen -->
+            <div class="game-screen" id="challengeScreen">
+                <div class="challenge-container">
+                    <div class="challenge-header">
+                        <h2 class="challenge-title" id="challengeTitle">Challenge 1</h2>
+                        <p class="challenge-description" id="challengeDescription">Beschreibung</p>
+                    </div>
+
+                    <div class="challenge-content">
+                        <div class="prompt-section">
+                            <h3>Dein Prompt:</h3>
+                            <div class="prompt-options" id="promptOptions">
+                                <!-- Prompt choices will be inserted here -->
+                            </div>
+                        </div>
+
+                        <div class="ai-response-section">
+                            <h3>AI Antwort:</h3>
+                            <div class="ai-response" id="aiResponse">
+                                <div class="typing-indicator">
+                                    <span></span><span></span><span></span>
+                                    <p>AI denkt nach...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="challenge-actions">
+                        <button class="submit-button" onclick="submitPrompt()">📤 Prompt senden</button>
+                        <button class="hint-button" onclick="showHint()">💡 Tipp</button>
+                    </div>
+
+                    <div class="hint-box" id="hintBox">
+                        <h4>💡 Tipp:</h4>
+                        <p id="hintText">Hier steht der Tipp...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="game-screen" id="resultsScreen">
+                <div class="results-content">
+                    <div class="results-header">
+                        <h2 class="results-title" id="resultsTitle">Challenge Abgeschlossen!</h2>
+                        <div class="score-display">
+                            <span class="score-earned" id="scoreEarned">+50 Punkte!</span>
+                        </div>
+                    </div>
+
+                    <div class="explanation-box">
+                        <h3>🧠 Was hast du gelernt?</h3>
+                        <p id="explanationText">Erklärung hier...</p>
+                    </div>
+
+                    <div class="results-actions">
+                        <button class="continue-button" onclick="nextChallenge()">▶️ Weiter</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completion Screen -->
+            <div class="game-screen" id="completionScreen">
+                <div class="completion-content">
+                    <div class="celebration">
+                        <h1 class="completion-title">🎉 Level 1 Abgeschlossen! 🎉</h1>
+                        <div class="final-score">
+                            <span>Gesamtpunktzahl:</span>
+                            <span class="final-score-value" id="finalScore">0</span>
+                        </div>
+                        <div class="rank-display" id="rankDisplay">
+                            <span class="rank-title">Rang:</span>
+                            <span class="rank-value" id="rankValue">Prompt Novice</span>
+                        </div>
+
+                        <div class="rank-requirements">
+                            <h3>🏆 Rang-Anforderungen:</h3>
+                            <div class="requirements-list">
+                                <div class="requirement bronze">🥉 Bronze: 25-39 Punkte</div>
+                                <div class="requirement silver">🥈 Silber: 40-49 Punkte</div>
+                                <div class="requirement gold">🥇 Gold: 50 Punkte</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="completion-actions">
+                        <button class="replay-button" onclick="restartGame()">🔄 Nochmal spielen</button>
+                        <a href="index.html" class="home-button">🏠 Zur Levelauswahl</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+
+    <script src="script.js"></script>
+    <script src="level1.js"></script>
+</body>
+</html>

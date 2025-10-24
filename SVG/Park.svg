@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        mask: url(#mask-1);
+      }
+
+      .cls-2 {
+        mask: url(#mask);
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-3, .cls-4 {
+        fill-rule: evenodd;
+      }
+    </style>
+    <mask id="mask" x="16" y="16" width="48" height="48" maskUnits="userSpaceOnUse">
+      <g id="mask-2">
+        <polygon id="path-1" class="cls-3" points="16 16 64 16 64 64 16 64 16 16"/>
+      </g>
+    </mask>
+    <mask id="mask-1" x="16" y="16" width="48" height="48" maskUnits="userSpaceOnUse">
+      <g id="mask-2-2" data-name="mask-2">
+        <polygon id="path-1-2" data-name="path-1" class="cls-3" points="16 16 64 16 64 64 16 64 16 16"/>
+      </g>
+    </mask>
+  </defs>
+  <g id="Icons_Navigation_NAV_316x80_parking_assist" data-name="Icons/Navigation/NAV_316x80_parking_assist">
+    <g id="Group">
+      <g class="cls-2">
+        <g id="P">
+          <g id="Shape">
+            <path d="M31.36,25.6h5.9c3.82,0,6.56.28,8.22.85,1.82.61,3.2,1.76,4.14,3.44.79,1.42,1.18,3.06,1.18,4.91,0,2.66-.79,4.79-2.38,6.39-1.4,1.41-3.43,2.22-6.09,2.44-1.17.09-2.67.13-4.48.13h-1.95v11.6h-4.53v-29.76ZM35.89,39.79h1.93c2.5,0,4.26-.15,5.28-.44,1.06-.32,1.85-.95,2.38-1.9.43-.76.64-1.65.64-2.68,0-2.27-.82-3.77-2.45-4.51-1.07-.48-3.04-.72-5.9-.72h-1.89v10.25Z"/>
+          </g>
+        </g>
+      </g>
+      <g class="cls-1">
+        <path id="Fill-3" class="cls-4" d="M20.8,18.88c-1.31,0-1.92.6-1.92,1.92v38.4c0,1.31.61,1.92,1.92,1.92h38.4c1.31,0,1.92-.61,1.92-1.92V20.8c0-1.32-.61-1.92-1.92-1.92H20.8ZM20.77,64c-2.63,0-4.77-2.14-4.77-4.77V20.77c0-2.63,2.14-4.77,4.77-4.77h38.46c2.63,0,4.77,2.14,4.77,4.77v38.47c0,2.63-2.14,4.77-4.77,4.77H20.77Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

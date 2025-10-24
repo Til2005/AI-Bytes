@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Bytes - Level Up your AI Skills!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-buttons">
+                <button class="achievements-btn" onclick="openAchievements()">🏆</button>
+                <button class="settings-btn" onclick="openSettings()">⚙️</button>
+            </div>
+            <div class="logo-container">
+                <img src="assets/images/_logo_horizontal_dark.png" alt="AI Bytes Logo" class="logo logo-dark">
+                <img src="assets/images/_logo_horizontal_white.png" alt="AI Bytes Logo" class="logo logo-white">
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="title-container">
+                        <h1 class="main-title">
+                            <span data-index="0">L</span><span data-index="1">e</span><span data-index="2">v</span><span data-index="3">e</span><span data-index="4">l</span>
+                            <span class="space"> </span>
+                            <span data-index="5">U</span><span data-index="6">p</span>
+                            <span class="space"> </span>
+                            <span data-index="7">y</span><span data-index="8">o</span><span data-index="9">u</span><span data-index="10">r</span>
+                            <span class="space"> </span>
+                            <span data-index="11">A</span><span data-index="12">I</span>
+                            <span class="space"> </span>
+                            <span data-index="13">S</span><span data-index="14">k</span><span data-index="15">i</span><span data-index="16">l</span><span data-index="17">l</span><span data-index="18">s</span><span data-index="19">!</span>
+                        </h1>
+                        <img src="assets/images/Mo man 01.png" alt="Mo Man" class="mo-character" id="moCharacter">
+                    </div>
+                </div>
+            </section>
+
+            <section class="levels">
+                <h2 class="levels-title">
+                    <span data-index="20">W</span><span data-index="21">ä</span><span data-index="22">h</span><span data-index="23">l</span><span data-index="24">e</span>
+                    <span class="space"> </span>
+                    <span data-index="25">d</span><span data-index="26">e</span><span data-index="27">i</span><span data-index="28">n</span>
+                    <span class="space"> </span>
+                    <span data-index="29">L</span><span data-index="30">e</span><span data-index="31">v</span><span data-index="32">e</span><span data-index="33">l</span>
+                </h2>
+                <div class="level-grid">
+                    <a href="level1.html" class="level-card level-1 available" style="text-decoration: none; color: inherit;">
+                        <div class="level-number">01</div>
+                        <h3 class="level-title">Nicht suchen, Prompten!</h3>
+                        <p class="level-description">Lerne die Grundlagen des richtigen Promptens</p>
+                        <div class="level-status">Kein Rang</div>
+                    </a>
+
+                    <a href="level2.html" class="level-card level-2 available" style="text-decoration: none; color: inherit;">
+                        <div class="level-number">02</div>
+                        <h3 class="level-title">KI in unseren Produkten</h3>
+                        <p class="level-description">Memory-Spiel mit Mercedes KI-Features</p>
+                        <div class="level-status">Kein Rang</div>
+                    </a>
+
+                    <a href="level3.html" class="level-card level-3 available" style="text-decoration: none; color: inherit;">
+                        <div class="level-number">03</div>
+                        <h3 class="level-title">Advanced Prompting</h3>
+                        <p class="level-description">Meistere professionelle Prompting-Techniken</p>
+                        <div class="level-status">Kein Rang</div>
+                    </a>
+
+                    <div class="level-card level-4 tba">
+                        <div class="level-number">04</div>
+                        <h3 class="level-title">Auch Bilder sind kein Problem</h3>
+                        <p class="level-description">Coming Soon</p>
+                        <div class="level-status">TBA</div>
+                    </div>
+
+                    <div class="level-card level-5 tba">
+                        <div class="level-number">05</div>
+                        <h3 class="level-title">Persönlicher KI Assistent</h3>
+                        <p class="level-description">Coming Soon</p>
+                        <div class="level-status">TBA</div>
+                    </div>
+
+                    <div class="level-card level-6 tba">
+                        <div class="level-number">06</div>
+                        <h3 class="level-title">Die KI Challenge</h3>
+                        <p class="level-description">Coming Soon</p>
+                        <div class="level-status">TBA</div>
+                    </div>
+
+                    <div class="level-card level-7 tba">
+                        <div class="level-number">07</div>
+                        <h3 class="level-title">Schummeln erlaubt... checkst du?</h3>
+                        <p class="level-description">Coming Soon</p>
+                        <div class="level-status">TBA</div>
+                    </div>
+
+                    <div class="level-card level-8 tba">
+                        <div class="level-number">08</div>
+                        <h3 class="level-title">Stolperfallen umgehen, Treffer landen!</h3>
+                        <p class="level-description">Coming Soon</p>
+                        <div class="level-status">TBA</div>
+                    </div>
+
+                    <div class="level-card level-9 secret locked">
+                        <div class="level-number secret-symbol">?</div>
+                        <h3 class="level-title">Geheimes Level</h3>
+                        <p class="level-description">🏆 Erreiche den Gold-Rang in allen Level</p>
+                        <div class="level-status">Gesperrt</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Digital Factory Campus - AI-Bytes | Entwickelt von Til Sander</p>
+        </footer>
+    </div>
+
+    <!-- Settings Popup -->
+    <div id="settingsPopup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Hintergrund auswählen</h3>
+                <button class="close-btn" onclick="closeSettings()">✕</button>
+            </div>
+            <div class="background-grid">
+                <div class="bg-option" onclick="changeBackground('gradient')" data-bg="gradient">
+                    <div class="bg-preview gradient-preview"></div>
+                    <span>Standard Gradient</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual.png')" data-bg="Key Visual.png">
+                    <img src="assets/images/Key Visual.png" alt="Key Visual" class="bg-preview">
+                    <span>Key Visual</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual 01.png')" data-bg="Key Visual 01.png">
+                    <img src="assets/images/Key Visual 01.png" alt="Key Visual 01" class="bg-preview">
+                    <span>Key Visual 01</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual 02.png')" data-bg="Key Visual 02.png">
+                    <img src="assets/images/Key Visual 02.png" alt="Key Visual 02" class="bg-preview">
+                    <span>Key Visual 02</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual 03.png')" data-bg="Key Visual 03.png">
+                    <img src="assets/images/Key Visual 03.png" alt="Key Visual 03" class="bg-preview">
+                    <span>Key Visual 03</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual 04.png')" data-bg="Key Visual 04.png">
+                    <img src="assets/images/Key Visual 04.png" alt="Key Visual 04" class="bg-preview">
+                    <span>Key Visual 04</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual 05.png')" data-bg="Key Visual 05.png">
+                    <img src="assets/images/Key Visual 05.png" alt="Key Visual 05" class="bg-preview">
+                    <span>Key Visual 05</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual_02.png')" data-bg="Key Visual_02.png">
+                    <img src="assets/images/Key Visual_02.png" alt="Key Visual Alt" class="bg-preview">
+                    <span>Key Visual Alt</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Key Visual_Farbverlauf.png')" data-bg="Key Visual_Farbverlauf.png">
+                    <img src="assets/images/Key Visual_Farbverlauf.png" alt="Farbverlauf" class="bg-preview">
+                    <span>Farbverlauf</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Til 1.png')" data-bg="Til 1.png">
+                    <img src="assets/images/Til 1.png" alt="Til 1" class="bg-preview">
+                    <span>Til 1</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Til 2.png')" data-bg="Til 2.png">
+                    <img src="assets/images/Til 2.png" alt="Til 2" class="bg-preview">
+                    <span>Til 2</span>
+                </div>
+                <div class="bg-option" onclick="changeBackground('Til 3.png')" data-bg="Til 3.png">
+                    <img src="assets/images/Til 3.png" alt="Til 3" class="bg-preview">
+                    <span>Til 3</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Popup -->
+    <div id="achievementsPopup" class="popup-overlay">
+        <div class="popup-content achievements-popup">
+            <div class="popup-header">
+                <h3>Achievements</h3>
+                <div class="header-buttons">
+                    <button class="reset-achievements-btn" onclick="resetAllAchievements()">🔄 Reset</button>
+                    <button class="close-btn" onclick="closeAchievements()">✕</button>
+                </div>
+            </div>
+            <div class="achievements-container">
+                <div class="achievement-category">
+                    <h4 class="category-title easy-title">🟢 Easy</h4>
+                    <div class="achievements-grid" id="easyAchievements"></div>
+                </div>
+
+                <div class="achievement-category">
+                    <h4 class="category-title normal-title">🟡 Normal</h4>
+                    <div class="achievements-grid" id="normalAchievements"></div>
+                </div>
+
+                <div class="achievement-category">
+                    <h4 class="category-title hard-title">🔴 Hard</h4>
+                    <div class="achievements-grid" id="hardAchievements"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

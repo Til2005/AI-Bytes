@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <rect x="31" y="16" width="10" height="4"/>
+  <path d="M43,24h-14c-.54.04-.96.46-1,1v38c.04.54.46.96,1,1h11v-15h-7l1.22-2.8,6.78-15.72,1-2.3,1.68-3.87c-.18-.19-.42-.3-.68-.31Z"/>
+  <polygon points="46 40 46 24 44 28.6 42 33.2 41 35.5 36 47 41 47 42 47 42 60 42 64 44 59.2 52 40 46 40"/>
+</svg>
