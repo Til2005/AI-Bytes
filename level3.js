@@ -356,7 +356,7 @@ class MoWorkshopHost {
         this.animationInterval = setInterval(() => {
             this.currentFrame = (this.currentFrame + 1) % this.celebrationFrames;
             const frameNumber = String(this.currentFrame).padStart(5, '0');
-            this.img.src = `Mo man Stand Pose/Mo man Stand Pose_${frameNumber}.png`;
+            this.img.src = `Mo_man_Stand_Pose/Mo man Stand Pose_${frameNumber}.png`;
         }, this.animationSpeed);
     }
 
@@ -437,7 +437,7 @@ class MoWorkshopHost {
         this.animationInterval = setInterval(() => {
             this.currentFrame = (this.currentFrame + 1) % this.speechFrames;
             const frameNumber = String(this.currentFrame).padStart(5, '0');
-            this.img.src = `Moman speech_animation/Moman Rede_${frameNumber}.png`;
+            this.img.src = `Moman_speech_animation/Moman Rede_${frameNumber}.png`;
         }, this.speechAnimationSpeed);
     }
 
@@ -448,7 +448,7 @@ class MoWorkshopHost {
         this.animationInterval = setInterval(() => {
             this.currentFrame = (this.currentFrame + 1) % this.celebrationFrames;
             const frameNumber = String(this.currentFrame).padStart(5, '0');
-            this.img.src = `Mo man Stand Pose/Mo man Stand Pose_${frameNumber}.png`;
+            this.img.src = `Mo_man_Stand_Pose/Mo man Stand Pose_${frameNumber}.png`;
         }, this.animationSpeed);
     }
 

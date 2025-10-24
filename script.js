@@ -275,7 +275,7 @@ function updateMoManAnimation() {
         animationFrame = (animationFrame + 1) % 48; // 48 frames for running
     } else {
         const frameNumber = String(animationFrame).padStart(5, '0');
-        moCharacter.src = `Mo man Stand Pose/Mo man Stand Pose_${frameNumber}.png`;
+        moCharacter.src = `Mo_man_Stand_Pose/Mo man Stand Pose_${frameNumber}.png`;
         animationFrame = (animationFrame + 1) % 24; // 24 frames for standing
     }
 

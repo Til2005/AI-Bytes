@@ -218,7 +218,7 @@ class MoManHost {
 
         this.animationInterval = setInterval(() => {
             const frameNumber = String(this.currentFrame).padStart(5, '0');
-            const framePath = `Mo man Stand Pose/Mo man Stand Pose_${frameNumber}.png`;
+            const framePath = `Mo_man_Stand_Pose/Mo man Stand Pose_${frameNumber}.png`;
             this.img.src = framePath;
 
             this.currentFrame++;
