@@ -1,3 +1,99 @@
+// ===============================
+//   CONSTANTS & CONFIGURATION
+// ===============================
+const CONFIG = {
+    PHYSICS: {
+        GRAVITY: 0.4,
+        JUMP_POWER: -9,
+        MOVE_SPEED: 3,
+        FALL_THRESHOLD: 300,
+        COLLISION_TOLERANCE: 30
+    },
+    MOMAN: {
+        WIDTH: 60,
+        HEIGHT: 60,
+        SPAWN_OFFSET_Y: 42
+    },
+    ANIMATIONS: {
+        MOMAN_STAND_FRAMES: 24,
+        MOMAN_RUN_FRAMES: 48,
+        MOMAN_JUMP_FRAMES: 42,
+        COIN_FRAMES: 24,
+        FRAME_RATE: 16, // ~60 FPS
+        MOMAN_ANIM_SPEED: 25,
+        COIN_ANIM_SPEED: 83
+    },
+    PATHS: {
+        MOMAN_STAND: 'Mo_man_Stand_Pose/',
+        MOMAN_RUN: 'Mo man Lauf 2s 24fps 48 frames/',
+        MOMAN_JUMP: 'Mo_man_Sprung_Pose/',
+        COINS: 'Coin_animation/',
+        TXP_STAND: 'TXP/TXP_Stand_Pose/',
+        TXP_TALK: 'TXP/TXP_Talk_Pose/',
+        TXP_LAUF: 'TXP/TXP_Lauf_Pose/',
+        TXP_SPRUNG: 'TXP/TXP_Sprung_Pose/'
+    },
+    ACHIEVEMENTS: {
+        M_KEY_TARGET: 30,
+        ANIMATOR_TARGET: 6,
+        COIN_TARGET: 3,
+        GOLD_RANK_TARGET: 1
+    }
+};
+
+// ===============================
+//   GAME STATE
+// ===============================
+const GameState = {
+    moMan: {
+        x: 0,
+        y: 0,
+        velocityY: 0,
+        isGrounded: false,
+        visible: true,
+        facingRight: true,
+        currentAnimation: 'standing',
+        animationFrame: 0,
+        jumpAnimationFrame: 0,
+        jumpAnimationCounter: 0
+    },
+    input: {
+        keysPressed: {}
+    },
+    game: {
+        coins: [],
+        coinsCollected: 0,
+        platforms: [],
+        gameLoop: null,
+        animationLoop: null
+    },
+    dom: {
+        // Cached DOM elements
+        moCharacter: null,
+        container: null,
+        mainTitle: null,
+        levelsTitle: null,
+        firstLetter: null,
+        titleContainer: null,
+        settingsPopup: null,
+        achievementsPopup: null
+    }
+};
+
+// ===============================
+//   DOM CACHE INITIALIZATION
+// ===============================
+function initDOMCache() {
+    GameState.dom.moCharacter = document.getElementById('moCharacter');
+    GameState.dom.container = document.querySelector('.container');
+    GameState.dom.mainTitle = document.querySelector('.main-title');
+    GameState.dom.levelsTitle = document.querySelector('.levels-title');
+    GameState.dom.titleContainer = document.querySelector('.title-container');
+    GameState.dom.settingsPopup = document.getElementById('settingsPopup');
+    GameState.dom.achievementsPopup = document.getElementById('achievementsPopup');
+    GameState.dom.firstLetter = document.querySelector('.main-title span[data-index="0"]');
+}
+
 // Settings popup functionality
 function openSettings() {
     const settingsPopup = document.getElementById('settingsPopup');
@@ -138,6 +234,20 @@ function loadLevelRanks() {
         }
     }
 
+    // Load Level 4 progress
+    const level4Progress = localStorage.getItem('aiBytes_level4_progress');
+    if (level4Progress) {
+        const progress = JSON.parse(level4Progress);
+        if (progress.completed && progress.rank) {
+            const level4Status = document.querySelector('.level-4 .level-status');
+            if (level4Status) {
+                level4Status.textContent = progress.rank;
+                level4Status.style.background = 'var(--saffron)';
+                level4Status.style.color = 'var(--russian-blue)';
+            }
+        }
+    }
+
     // Check if secret level should be unlocked
     checkSecretLevel();
 }
@@ -188,48 +298,31 @@ function checkSecretLevel() {
     }
 }
 
+// ===============================
+//   MO MAN CHARACTER SYSTEM
+// ===============================
 // Mo Man Character Controls - Mario Bros style with Animation and Physics
-let moManX = 0;
-let moManY = 0;
-let moManVelocityY = 0;
-const gravity = 0.4; // Slightly faster falling for quicker jumps
-const jumpPower = -9; // Higher jump for platform reaching
-let isGrounded = false;
-let moManVisible = true;
-let isMoving = false;
-let facingRight = true;
-const moCharacter = document.getElementById('moCharacter');
-let keysPressed = {};
-let gameLoop;
-let animationFrame = 0;
-let jumpAnimationFrame = 0;
-let jumpAnimationCounter = 0; // Counter to slow down jump animation
-let animationLoop;
-let currentAnimation = 'standing'; // 'standing', 'running', or 'jumping'
-
-// Coins system
-let coins = [];
-let coinsCollected = 0;
-
-// Platform system
-let platforms = [];
+// (All state now managed in GameState object)
 
 function initializeMoMan() {
-    if (!moCharacter) return;
+    const moChar = GameState.dom.moCharacter;
+    if (!moChar) return;
 
     // Position Mo Man over the L (first letter)
-    const firstLetter = document.querySelector('.main-title span[data-index="0"]');
-    if (firstLetter) {
+    const firstLetter = GameState.dom.firstLetter;
+    const containerRect = GameState.dom.titleContainer;
+
+    if (firstLetter && containerRect) {
         const letterRect = firstLetter.getBoundingClientRect();
-        const containerRect = document.querySelector('.title-container').getBoundingClientRect();
-        moManX = letterRect.left - containerRect.left + (letterRect.width / 2) - 30; // Center over L
+        const contRect = containerRect.getBoundingClientRect();
+        GameState.moMan.x = letterRect.left - contRect.left + (letterRect.width / 2) - (CONFIG.MOMAN.WIDTH / 2);
 
         // Start Mo Man directly on the first letter
-        const letterTop = letterRect.top - containerRect.top;
-        moManY = letterTop - 42; // Start directly on the L
-        isGrounded = true; // Start grounded
-        moCharacter.style.left = moManX + 'px';
-        moCharacter.style.top = moManY + 'px';
+        const letterTop = letterRect.top - contRect.top;
+        GameState.moMan.y = letterTop - CONFIG.MOMAN.SPAWN_OFFSET_Y;
+        GameState.moMan.isGrounded = true;
+        moChar.style.left = GameState.moMan.x + 'px';
+        moChar.style.top = GameState.moMan.y + 'px';
 
         // Highlight the L
         firstLetter.classList.add('highlighted');
@@ -243,186 +336,206 @@ function initializeMoMan() {
 }
 
 function startMoManAnimation() {
-    animationLoop = setInterval(() => {
+    GameState.game.animationLoop = setInterval(() => {
         updateMoManAnimation();
-    }, 25); // Faster animation - increased from 42ms to 25ms
+    }, CONFIG.ANIMATIONS.MOMAN_ANIM_SPEED);
 }
 
 function updateMoManAnimation() {
-    if (currentAnimation === 'jumping') {
+    const moChar = GameState.dom.moCharacter;
+    if (!moChar) return;
+
+    const state = GameState.moMan;
+
+    if (state.currentAnimation === 'jumping') {
         // Update jump animation slower (every 3rd call)
-        jumpAnimationCounter++;
-        if (jumpAnimationCounter >= 3) {
-            jumpAnimationCounter = 0;
+        state.jumpAnimationCounter++;
+        if (state.jumpAnimationCounter >= 3) {
+            state.jumpAnimationCounter = 0;
 
             // Handle jumping animation with special frame names
             let jumpFrameName;
-            if (jumpAnimationFrame === 27) {
+            if (state.jumpAnimationFrame === 27) {
                 jumpFrameName = 'Mo man Sprung_00027_a.png';
-            } else if (jumpAnimationFrame === 28) {
+            } else if (state.jumpAnimationFrame === 28) {
                 jumpFrameName = 'Mo man Sprung_00028_b.png';
             } else {
-                const frameNumber = String(jumpAnimationFrame).padStart(5, '0');
+                const frameNumber = String(state.jumpAnimationFrame).padStart(5, '0');
                 jumpFrameName = `Mo man Sprung_${frameNumber}.png`;
             }
 
-            moCharacter.src = `Mo_man_Sprung_Pose/${jumpFrameName}`;
+            moChar.src = `${CONFIG.PATHS.MOMAN_JUMP}${jumpFrameName}`;
         }
-        // Don't auto-increment jump frame - it will be controlled by physics
-    } else if (currentAnimation === 'running') {
-        const frameNumber = String(animationFrame).padStart(5, '0');
-        moCharacter.src = `Mo man Lauf 2s 24fps 48 frames/Mo man Lauf Pose_${frameNumber}.png`;
-        animationFrame = (animationFrame + 1) % 48; // 48 frames for running
+    } else if (state.currentAnimation === 'running') {
+        const frameNumber = String(state.animationFrame).padStart(5, '0');
+        moChar.src = `${CONFIG.PATHS.MOMAN_RUN}Mo man Lauf Pose_${frameNumber}.png`;
+        state.animationFrame = (state.animationFrame + 1) % CONFIG.ANIMATIONS.MOMAN_RUN_FRAMES;
     } else {
-        const frameNumber = String(animationFrame).padStart(5, '0');
-        moCharacter.src = `Mo_man_Stand_Pose/Mo man Stand Pose_${frameNumber}.png`;
-        animationFrame = (animationFrame + 1) % 24; // 24 frames for standing
+        const frameNumber = String(state.animationFrame).padStart(5, '0');
+        moChar.src = `${CONFIG.PATHS.MOMAN_STAND}Mo man Stand Pose_${frameNumber}.png`;
+        state.animationFrame = (state.animationFrame + 1) % CONFIG.ANIMATIONS.MOMAN_STAND_FRAMES;
     }
 
     // Apply direction (flip horizontally if facing left)
-    if (facingRight) {
-        moCharacter.style.transform = 'scaleX(1)';
-    } else {
-        moCharacter.style.transform = 'scaleX(-1)';
-    }
+    moChar.style.transform = state.facingRight ? 'scaleX(1)' : 'scaleX(-1)';
 }
 
 function updateJumpFrame() {
     // Map jump velocity to animation frame (42 frames total, 0-41)
     // Frame 27-28 is the peak of the jump
-    const maxJumpVelocity = 9; // Same as jumpPower magnitude
+    const state = GameState.moMan;
+    const maxJumpVelocity = Math.abs(CONFIG.PHYSICS.JUMP_POWER);
 
-    if (moManVelocityY <= 0) {
+    if (state.velocityY <= 0) {
         // Rising phase: map velocity -9 to 0 → frames 0 to 27
-        const progress = 1 - (Math.abs(moManVelocityY) / maxJumpVelocity); // Invert progress
-        jumpAnimationFrame = Math.floor(progress * 27);
-        jumpAnimationFrame = Math.max(0, Math.min(27, jumpAnimationFrame));
+        const progress = 1 - (Math.abs(state.velocityY) / maxJumpVelocity);
+        state.jumpAnimationFrame = Math.floor(progress * 27);
+        state.jumpAnimationFrame = Math.max(0, Math.min(27, state.jumpAnimationFrame));
     } else {
         // Falling phase: map velocity 0 to +9 → frames 27 to 41
-        const progress = Math.min(moManVelocityY / maxJumpVelocity, 1);
-        jumpAnimationFrame = 27 + Math.floor(progress * 14); // 14 frames from 27 to 41
-        jumpAnimationFrame = Math.max(27, Math.min(41, jumpAnimationFrame));
+        const progress = Math.min(state.velocityY / maxJumpVelocity, 1);
+        state.jumpAnimationFrame = 27 + Math.floor(progress * 14);
+        state.jumpAnimationFrame = Math.max(27, Math.min(41, state.jumpAnimationFrame));
     }
 }
 
 function startGameLoop() {
-    gameLoop = setInterval(() => {
-        // Skip physics if Mo Man is not visible
-        if (!moManVisible) return;
+    GameState.game.gameLoop = setInterval(() => {
+        updateGamePhysics();
+    }, CONFIG.ANIMATIONS.FRAME_RATE);
+}
 
-        const moveSpeed = 3; // pixels per frame
+function updateGamePhysics() {
+    const state = GameState.moMan;
+    const moChar = GameState.dom.moCharacter;
 
-        // Check if Mo Man is moving
-        isMoving = false;
+    // Skip physics if Mo Man is not visible
+    if (!state.visible || !moChar) return;
 
-        // Horizontal movement based on held keys
-        if (keysPressed['ArrowLeft']) {
-            moManX -= moveSpeed;
-            facingRight = false;
-            isMoving = true;
+    // Handle horizontal movement
+    let isMoving = false;
+    const keys = GameState.input.keysPressed;
+
+    if (keys['ArrowLeft']) {
+        state.x -= CONFIG.PHYSICS.MOVE_SPEED;
+        state.facingRight = false;
+        isMoving = true;
+    }
+    if (keys['ArrowRight']) {
+        state.x += CONFIG.PHYSICS.MOVE_SPEED;
+        state.facingRight = true;
+        isMoving = true;
+    }
+
+    // Update animation based on movement and physics
+    const newAnimation = determineAnimation(state, isMoving);
+    if (newAnimation !== state.currentAnimation) {
+        state.currentAnimation = newAnimation;
+        if (newAnimation !== 'jumping') {
+            state.animationFrame = 0;
         }
-        if (keysPressed['ArrowRight']) {
-            moManX += moveSpeed;
-            facingRight = true;
-            isMoving = true;
+        if (newAnimation === 'jumping') {
+            state.jumpAnimationFrame = 0;
         }
+    }
 
-        // Update animation based on movement and physics
-        let newAnimation;
-        if (!isGrounded && Math.abs(moManVelocityY) > 0.5) {
-            newAnimation = 'jumping';
-            // Calculate jump frame based on jump phase
-            updateJumpFrame();
-        } else if (isMoving) {
-            newAnimation = 'running';
+    // Apply gravity and movement
+    state.velocityY += CONFIG.PHYSICS.GRAVITY;
+    state.y += state.velocityY;
+
+    // Handle collisions
+    handleCollisions(state);
+
+    // Check if fallen too far
+    if (state.y > CONFIG.PHYSICS.FALL_THRESHOLD) {
+        handleMoManFall(moChar);
+        return;
+    }
+
+    // Update DOM
+    moChar.style.left = state.x + 'px';
+    moChar.style.top = state.y + 'px';
+
+    // Update game state
+    updateHighlighting();
+    checkCoinCollisions();
+}
+
+function determineAnimation(state, isMoving) {
+    if (!state.isGrounded && Math.abs(state.velocityY) > 0.5) {
+        updateJumpFrame();
+        return 'jumping';
+    } else if (isMoving) {
+        return 'running';
+    } else {
+        return 'standing';
+    }
+}
+
+function handleCollisions(state) {
+    // Check for platform collision first (higher priority)
+    const platformLevel = checkPlatformCollisions(state.x, state.y);
+
+    if (platformLevel !== null && state.velocityY >= 0) {
+        if (state.y >= platformLevel) {
+            state.y = platformLevel;
+            state.velocityY = 0;
+            state.isGrounded = true;
         } else {
-            newAnimation = 'standing';
+            state.isGrounded = false;
         }
+    } else {
+        // Check for letter collision
+        const groundLevel = checkLetterCollision(state.x, state.y);
 
-        if (newAnimation !== currentAnimation) {
-            currentAnimation = newAnimation;
-            if (newAnimation !== 'jumping') {
-                animationFrame = 0; // Reset animation frame when switching to non-jump
-            }
-            if (newAnimation === 'jumping') {
-                jumpAnimationFrame = 0; // Start jump animation from beginning
-            }
-        }
-
-        // Apply gravity
-        moManVelocityY += gravity;
-
-        // Apply gravity and movement first
-        moManY += moManVelocityY;
-
-        // Check for platform collision first (higher priority)
-        const platformLevel = checkPlatformCollisions(moManX, moManY);
-
-        if (platformLevel !== null && moManVelocityY >= 0) {
-            // Land on platform
-            if (moManY >= platformLevel) {
-                moManY = platformLevel;
-                moManVelocityY = 0;
-                isGrounded = true;
+        if (groundLevel !== null && state.velocityY >= 0) {
+            if (state.y >= groundLevel) {
+                state.y = groundLevel;
+                state.velocityY = 0;
+                state.isGrounded = true;
             } else {
-                isGrounded = false;
+                state.isGrounded = false;
             }
-        } else {
-            // Then check for letter collision if no platform collision
-            const groundLevel = checkLetterCollision(moManX, moManY);
-
-            if (groundLevel !== null && moManVelocityY >= 0) {
-                // Only land on letter if Mo Man is actually falling onto it from above
-                if (moManY >= groundLevel) {
-                    moManY = groundLevel;
-                    moManVelocityY = 0;
-                    isGrounded = true;
-                } else {
-                    // Mo Man is below the letter level, don't teleport up
-                    isGrounded = false;
-                }
-            } else if (groundLevel === null) {
-                // No collision, continue falling
-                isGrounded = false;
-            }
+        } else if (groundLevel === null) {
+            state.isGrounded = false;
         }
+    }
+}
 
-        // Check if Mo Man falls too far down (no letters below)
-        if (moManY > 300) { // Increased threshold for disappearing
-            moManVisible = false;
-            moCharacter.style.display = 'none';
-            showRespawnUI();
-            return; // Stop physics when disappeared
-        }
-
-        // Update position
-        moCharacter.style.left = moManX + 'px';
-        moCharacter.style.top = moManY + 'px';
-
-        // Update highlighting
-        updateHighlighting();
-
-        // Check coin collisions
-        checkCoinCollisions();
-    }, 16); // ~60 FPS
+function handleMoManFall(moChar) {
+    GameState.moMan.visible = false;
+    moChar.style.display = 'none';
+    showRespawnUI();
 }
 
 // Collision detection with letters
+// Cache letters on initialization to avoid repeated queries
+let cachedLetters = null;
+
+function getCachedLetters() {
+    if (!cachedLetters) {
+        cachedLetters = Array.from(document.querySelectorAll('.main-title span[data-index], .levels-title span[data-index]'));
+    }
+    return cachedLetters;
+}
+
 function checkLetterCollision(x, y) {
-    // Check both main title and levels title
-    const letters = document.querySelectorAll('.main-title span[data-index], .levels-title span[data-index]');
-    const moManWidth = 60; // Mo Man's approximate width
-    const moManBottom = y + 60; // Mo Man's bottom edge
+    const letters = getCachedLetters();
+    const moManBottom = y + CONFIG.MOMAN.HEIGHT;
 
     for (let letter of letters) {
         const letterRect = letter.getBoundingClientRect();
+
         // Use different containers based on which title the letter belongs to
         let containerRect;
         if (letter.closest('.main-title')) {
-            containerRect = document.querySelector('.title-container').getBoundingClientRect();
+            containerRect = GameState.dom.titleContainer?.getBoundingClientRect();
         } else {
-            containerRect = document.querySelector('.levels').getBoundingClientRect();
+            const levelsContainer = document.querySelector('.levels');
+            containerRect = levelsContainer?.getBoundingClientRect();
         }
+
+        if (!containerRect) continue;
 
         // Convert to relative coordinates
         const letterLeft = letterRect.left - containerRect.left;
@@ -431,22 +544,20 @@ function checkLetterCollision(x, y) {
 
         // Check if Mo Man is horizontally over this letter
         const moManLeft = x;
-        const moManRight = x + moManWidth;
+        const moManRight = x + CONFIG.MOMAN.WIDTH;
 
         if (moManRight > letterLeft && moManLeft < letterRight) {
-            // Mo Man is horizontally over this letter
-
             // Calculate the ground level for this letter
             let groundLevel;
             if (letter.closest('.levels-title')) {
-                groundLevel = letterTop + 75; // Position Mo Man lower on "Wähle dein Level"
+                groundLevel = letterTop + 75;
             } else {
-                groundLevel = letterTop - 42; // Position Mo Man slightly higher on main title
+                groundLevel = letterTop - CONFIG.MOMAN.SPAWN_OFFSET_Y;
             }
 
-            // Only return collision if Mo Man is close to this letter (within smaller range)
+            // Only return collision if Mo Man is close to this letter
             const distanceToGround = Math.abs(y - groundLevel);
-            if (distanceToGround < 30) { // Reduced hitbox from 100px to 30px
+            if (distanceToGround < CONFIG.PHYSICS.COLLISION_TOLERANCE) {
                 return groundLevel;
             }
         }
@@ -455,49 +566,76 @@ function checkLetterCollision(x, y) {
     return null; // No collision
 }
 
-// Track key states
-document.addEventListener('keydown', function(event) {
-    if (!document.querySelector('.main-title')) return;
+// ===============================
+//   EVENT LISTENERS
+// ===============================
+const EventHandlers = {
+    keydown: null,
+    keyup: null,
+    settingsClick: null
+};
 
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-        event.preventDefault();
-        keysPressed[event.key] = true;
-    }
+function initEventListeners() {
+    // Key down handler
+    EventHandlers.keydown = function(event) {
+        if (!GameState.dom.mainTitle) return;
 
-    // Jump with Arrow Up - can jump anytime
-    if (event.key === 'ArrowUp' && isGrounded) {
-        event.preventDefault();
-        moManVelocityY = jumpPower;
-        isGrounded = false;
-    }
-
-    // Track M key presses for achievement
-    if (event.key.toLowerCase() === 'm') {
-        achievementData.mKeyPresses++;
-        const keymasterAchievement = achievements.easy.find(a => a.id === 'keymaster');
-        if (keymasterAchievement) {
-            keymasterAchievement.progress = achievementData.mKeyPresses;
-            saveAchievements();
-            checkAchievement('keymaster');
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            GameState.input.keysPressed[event.key] = true;
         }
-    }
-});
 
-document.addEventListener('keyup', function(event) {
-    if (!document.querySelector('.main-title')) return;
-
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-        event.preventDefault();
-        keysPressed[event.key] = false;
-    }
-
-    // Respawn with R key
-    if (event.key === 'R' || event.key === 'r') {
-        if (!moManVisible) {
-            respawnMoMan();
+        // Jump with Arrow Up
+        if (event.key === 'ArrowUp' && GameState.moMan.isGrounded) {
+            event.preventDefault();
+            GameState.moMan.velocityY = CONFIG.PHYSICS.JUMP_POWER;
+            GameState.moMan.isGrounded = false;
         }
+
+        // Track M key presses for achievement
+        if (event.key.toLowerCase() === 'm') {
+            achievementData.mKeyPresses++;
+            const keymasterAchievement = achievements.easy.find(a => a.id === 'keymaster');
+            if (keymasterAchievement) {
+                keymasterAchievement.progress = achievementData.mKeyPresses;
+                saveAchievements();
+                checkAchievement('keymaster');
+            }
+        }
+    };
+
+    // Key up handler
+    EventHandlers.keyup = function(event) {
+        if (!GameState.dom.mainTitle) return;
+
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            GameState.input.keysPressed[event.key] = false;
+        }
+
+        // Respawn with R key
+        if (event.key === 'R' || event.key === 'r') {
+            if (!GameState.moMan.visible) {
+                respawnMoMan();
+            }
+        }
+    };
+
+    document.addEventListener('keydown', EventHandlers.keydown);
+    document.addEventListener('keyup', EventHandlers.keyup);
+}
+
+function cleanupEventListeners() {
+    if (EventHandlers.keydown) {
+        document.removeEventListener('keydown', EventHandlers.keydown);
     }
-});
+    if (EventHandlers.keyup) {
+        document.removeEventListener('keyup', EventHandlers.keyup);
+    }
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', cleanupEventListeners);
 
 // Respawn UI functions
 function showRespawnUI() {
@@ -540,53 +678,61 @@ function hideRespawnUI() {
 }
 
 function respawnMoMan() {
+    const firstLetter = GameState.dom.firstLetter;
+    const moChar = GameState.dom.moCharacter;
+    const containerRect = GameState.dom.titleContainer;
+
+    if (!firstLetter || !moChar || !containerRect) return;
+
     // Reset Mo Man to starting position
-    const firstLetter = document.querySelector('.main-title span[data-index="0"]');
-    if (firstLetter) {
-        const letterRect = firstLetter.getBoundingClientRect();
-        const containerRect = document.querySelector('.title-container').getBoundingClientRect();
-        moManX = letterRect.left - containerRect.left + (letterRect.width / 2) - 30;
-        const letterTop = letterRect.top - containerRect.top;
-        moManY = letterTop - 42;
-        moManVelocityY = 0;
-        isGrounded = true;
-        moManVisible = true;
+    const letterRect = firstLetter.getBoundingClientRect();
+    const contRect = containerRect.getBoundingClientRect();
 
-        // Show Mo Man again
-        moCharacter.style.display = 'block';
-        moCharacter.style.left = moManX + 'px';
-        moCharacter.style.top = moManY + 'px';
+    GameState.moMan.x = letterRect.left - contRect.left + (letterRect.width / 2) - (CONFIG.MOMAN.WIDTH / 2);
+    const letterTop = letterRect.top - contRect.top;
+    GameState.moMan.y = letterTop - CONFIG.MOMAN.SPAWN_OFFSET_Y;
+    GameState.moMan.velocityY = 0;
+    GameState.moMan.isGrounded = true;
+    GameState.moMan.visible = true;
 
-        // Hide respawn UI
-        hideRespawnUI();
+    // Show Mo Man again
+    moChar.style.display = 'block';
+    moChar.style.left = GameState.moMan.x + 'px';
+    moChar.style.top = GameState.moMan.y + 'px';
 
-        // Reset all coins
-        resetCoins();
+    // Hide respawn UI
+    hideRespawnUI();
 
-        // Highlight the L again
-        document.querySelectorAll('.main-title span[data-index], .levels-title span[data-index]').forEach(span => {
-            span.classList.remove('highlighted');
-        });
-        firstLetter.classList.add('highlighted');
-    }
+    // Reset all coins
+    resetCoins();
+
+    // Highlight the L again
+    const letters = getCachedLetters();
+    letters.forEach(span => span.classList.remove('highlighted'));
+    firstLetter.classList.add('highlighted');
 }
 
 function getCurrentLetter() {
-    // Find closest letter to Mo Man
-    const letters = document.querySelectorAll('.main-title span[data-index], .levels-title span[data-index]');
+    const letters = getCachedLetters();
+    const state = GameState.moMan;
     let closestLetter = null;
     let closestDistance = Infinity;
 
     letters.forEach(letter => {
         const letterRect = letter.getBoundingClientRect();
         let containerRect;
+
         if (letter.closest('.main-title')) {
-            containerRect = document.querySelector('.title-container').getBoundingClientRect();
+            containerRect = GameState.dom.titleContainer?.getBoundingClientRect();
         } else {
-            containerRect = document.querySelector('.levels').getBoundingClientRect();
+            const levelsContainer = document.querySelector('.levels');
+            containerRect = levelsContainer?.getBoundingClientRect();
         }
+
+        if (!containerRect) return;
+
         const letterCenter = letterRect.left - containerRect.left + (letterRect.width / 2);
-        const moCenter = moManX + 30; // Mo Man center
+        const moCenter = state.x + (CONFIG.MOMAN.WIDTH / 2);
         const distance = Math.abs(letterCenter - moCenter);
 
         if (distance < closestDistance) {
@@ -600,35 +746,66 @@ function getCurrentLetter() {
 
 function updateHighlighting() {
     // Remove all highlights
-    document.querySelectorAll('.main-title span[data-index], .levels-title span[data-index]').forEach(span => {
-        span.classList.remove('highlighted');
-    });
+    const letters = getCachedLetters();
+    letters.forEach(span => span.classList.remove('highlighted'));
 
-    // Highlight closest letter green
+    // Highlight closest letter
     const closestLetter = getCurrentLetter();
     if (closestLetter) {
         closestLetter.classList.add('highlighted');
     }
 }
 
+// ===============================
+//   INITIALIZATION
+// ===============================
+function initializeGame() {
+    try {
+        // Initialize DOM cache first
+        initDOMCache();
+
+        // Initialize event listeners
+        initEventListeners();
+
+        // Load saved data
+        loadSavedBackground();
+        loadLevelRanks();
+        loadAchievements();
+
+        // Initialize game systems with delays to ensure layout is ready
+        setTimeout(() => {
+            try {
+                initializePlatforms();
+            } catch (e) {
+                console.error('Platform initialization failed:', e);
+            }
+        }, 150);
+
+        setTimeout(() => {
+            try {
+                initializeMoMan();
+            } catch (e) {
+                console.error('MoMan initialization failed:', e);
+            }
+        }, 100);
+
+        setTimeout(() => {
+            try {
+                initializeCoins();
+            } catch (e) {
+                console.error('Coin initialization failed:', e);
+            }
+        }, 200);
+
+        // Initialize logo easter egg
+        initializeLogoAnimation();
+    } catch (error) {
+        console.error('Game initialization failed:', error);
+    }
+}
+
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadSavedBackground();
-    loadLevelRanks();
-    loadAchievements(); // Initialize achievement system
-
-    // Initialize Mo Man after a short delay to ensure layout is ready
-    setTimeout(initializeMoMan, 100);
-
-    // Initialize coins
-    setTimeout(initializeCoins, 200);
-
-    // Initialize platforms
-    setTimeout(initializePlatforms, 150);
-
-    // Initialize logo easter egg
-    initializeLogoAnimation();
-});
+document.addEventListener('DOMContentLoaded', initializeGame);
 
 // Platform System
 function initializePlatforms() {
@@ -668,46 +845,47 @@ function createPlatform(id, x, y, width = 64) {
 }
 
 function checkPlatformCollisions(moManX, moManY) {
-    const moManWidth = 60;
-    const moManHeight = 60;
-    const moManBottom = moManY + moManHeight;
+    const moManBottom = moManY + CONFIG.MOMAN.HEIGHT;
     const moManLeft = moManX;
-    const moManRight = moManX + moManWidth;
+    const moManRight = moManX + CONFIG.MOMAN.WIDTH;
 
-    for (let platform of platforms) {
+    for (let platform of GameState.game.platforms) {
         const platformLeft = platform.x;
         const platformRight = platform.x + platform.width;
         const platformTop = platform.y;
 
-        // Debug: Console log to see if we're detecting collision
         const horizontalOverlap = moManRight > platformLeft && moManLeft < platformRight;
         const verticalNear = moManBottom >= platformTop - 10 && moManBottom <= platformTop + 30;
 
         if (horizontalOverlap && verticalNear) {
-            console.log('Platform collision detected!', {
-                platform: platform.id,
-                moManX, moManY, moManBottom,
-                platformLeft, platformRight, platformTop
-            });
-            return platformTop - 60; // Landing position
+            return platformTop - CONFIG.MOMAN.HEIGHT;
         }
     }
 
-    return null; // No platform collision
+    return null;
 }
 
-// Coins System
+// ===============================
+//   COINS SYSTEM
+// ===============================
 function initializeCoins() {
     // Only create coins on the main page (not in levels)
-    if (!document.querySelector('.main-title')) return;
+    if (!GameState.dom.mainTitle) return;
 
-    // Create only 3 coins total, with one centered above "Wähle dein Level"
-    createCoin('coin1', -100, 120);    // Above main title center
-    createCoin('coin2', 600, 180);   // Between titles
-    createCoin('coin3', 800, 300);   // Centered above "Wähle dein Level"
+    // Coin positions
+    const coinPositions = [
+        { id: 'coin1', x: -100, y: 120 },   // Above main title center
+        { id: 'coin2', x: 600, y: 180 },    // Between titles
+        { id: 'coin3', x: 800, y: 300 }     // Centered above "Wähle dein Level"
+    ];
+
+    coinPositions.forEach(pos => createCoin(pos.id, pos.x, pos.y));
 }
 
 function createCoin(id, x, y) {
+    const container = GameState.dom.container;
+    if (!container) return;
+
     const coin = document.createElement('div');
     coin.id = id;
     coin.className = 'coin';
@@ -719,7 +897,6 @@ function createCoin(id, x, y) {
         height: 32px;
         z-index: 100;
         animation: coinFloat 3s ease-in-out infinite;
-        cursor: pointer;
         image-rendering: pixelated;
         image-rendering: -moz-crisp-edges;
         image-rendering: crisp-edges;
@@ -730,10 +907,10 @@ function createCoin(id, x, y) {
     coinImg.style.cssText = 'width: 100%; height: 100%; image-rendering: pixelated;';
     coin.appendChild(coinImg);
 
-    document.querySelector('.container').appendChild(coin);
+    container.appendChild(coin);
 
     // Store coin data with animation properties
-    coins.push({
+    const coinData = {
         element: coin,
         id: id,
         x: x,
@@ -741,10 +918,10 @@ function createCoin(id, x, y) {
         collected: false,
         animationFrame: 0,
         img: coinImg
-    });
+    };
 
-    // Start coin animation
-    startCoinAnimation(coins[coins.length - 1]);
+    GameState.game.coins.push(coinData);
+    startCoinAnimation(coinData);
 }
 
 function startCoinAnimation(coin) {
@@ -754,45 +931,46 @@ function startCoinAnimation(coin) {
             return;
         }
 
-        coin.animationFrame = (coin.animationFrame + 1) % 24; // 24 frames
-        const frameNumber = String(coin.animationFrame + 1).padStart(4, '0'); // 0001-0024
-        coin.img.src = `Coin_animation/${frameNumber}.png`;
-    }, 83); // ~12 FPS (1000ms / 12fps ≈ 83ms)
+        coin.animationFrame = (coin.animationFrame + 1) % CONFIG.ANIMATIONS.COIN_FRAMES;
+        const frameNumber = String(coin.animationFrame + 1).padStart(4, '0');
+        coin.img.src = `${CONFIG.PATHS.COINS}${frameNumber}.png`;
+    }, CONFIG.ANIMATIONS.COIN_ANIM_SPEED);
 }
 
 function resetCoins() {
     // Remove all existing coins from DOM
-    coins.forEach(coin => {
+    GameState.game.coins.forEach(coin => {
         if (coin.element && coin.element.parentNode) {
             coin.element.remove();
         }
     });
 
-    // Clear coins array
-    coins = [];
-    coinsCollected = 0;
-    achievementData.coinsThisRun = 0; // Reset coin achievement progress
+    // Clear coins array and counters
+    GameState.game.coins = [];
+    GameState.game.coinsCollected = 0;
+    achievementData.coinsThisRun = 0;
 
     // Recreate all coins
     initializeCoins();
 }
 
-
 function checkCoinCollisions() {
-    if (!moManVisible) return;
+    const moChar = GameState.dom.moCharacter;
+    if (!GameState.moMan.visible || !moChar) return;
 
-    coins.forEach(coin => {
+    const moManRect = moChar.getBoundingClientRect();
+
+    GameState.game.coins.forEach(coin => {
         if (coin.collected) return;
 
         const coinRect = coin.element.getBoundingClientRect();
-        const moManRect = moCharacter.getBoundingClientRect();
 
         // Check collision (with some tolerance)
-        if (moManRect.right > coinRect.left + 5 &&
-            moManRect.left < coinRect.right - 5 &&
-            moManRect.bottom > coinRect.top + 5 &&
-            moManRect.top < coinRect.bottom - 5) {
-
+        const collisionTolerance = 5;
+        if (moManRect.right > coinRect.left + collisionTolerance &&
+            moManRect.left < coinRect.right - collisionTolerance &&
+            moManRect.bottom > coinRect.top + collisionTolerance &&
+            moManRect.top < coinRect.bottom - collisionTolerance) {
             collectCoin(coin);
         }
     });
@@ -800,7 +978,7 @@ function checkCoinCollisions() {
 
 function collectCoin(coin) {
     coin.collected = true;
-    coinsCollected++;
+    GameState.game.coinsCollected++;
     achievementData.coinsThisRun++;
 
     // Coin collect animation
@@ -814,15 +992,14 @@ function collectCoin(coin) {
     // Show collection effect
     showCoinCollectEffect(coin.x, coin.y);
 
-    // Check for coin master achievement (all 3 coins collected)
-    if (achievementData.coinsThisRun >= 3) {
-        // Delay achievement check by 1 second to allow for potential death
+    // Check for coin master achievement
+    if (achievementData.coinsThisRun >= CONFIG.ACHIEVEMENTS.COIN_TARGET) {
         setTimeout(() => {
-            if (achievementData.coinsThisRun >= 3) { // Still alive after 1 second
+            if (achievementData.coinsThisRun >= CONFIG.ACHIEVEMENTS.COIN_TARGET) {
                 const coinmasterAchievement = achievements.normal.find(a => a.id === 'coinmaster');
                 if (coinmasterAchievement && !coinmasterAchievement.unlocked) {
-                    coinmasterAchievement.progress = 3;
-                    achievementData.coinsThisRun = 0; // Reset for next attempt
+                    coinmasterAchievement.progress = CONFIG.ACHIEVEMENTS.COIN_TARGET;
+                    achievementData.coinsThisRun = 0;
                     saveAchievements();
                     checkAchievement('coinmaster');
                 }
@@ -1215,16 +1392,18 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Achievement System
+// ===============================
+//   ACHIEVEMENT SYSTEM
+// ===============================
 const achievements = {
     easy: [
         {
             id: 'keymaster',
             name: 'Tastenmeister',
-            description: 'Drücke 30x die "M" Taste',
+            description: `Drücke ${CONFIG.ACHIEVEMENTS.M_KEY_TARGET}x die "M" Taste`,
             icon: '⌨️',
             progress: 0,
-            target: 30,
+            target: CONFIG.ACHIEVEMENTS.M_KEY_TARGET,
             unlocked: false
         },
         {
@@ -1233,7 +1412,7 @@ const achievements = {
             description: 'Sieh alle Logo-Animationen',
             icon: '🎬',
             progress: 0,
-            target: 6,
+            target: CONFIG.ACHIEVEMENTS.ANIMATOR_TARGET,
             unlocked: false,
             viewedAnimations: new Set()
         }
@@ -1242,10 +1421,10 @@ const achievements = {
         {
             id: 'coinmaster',
             name: 'Münzsammler',
-            description: 'Sammle alle 3 Münzen ohne zu sterben',
+            description: `Sammle alle ${CONFIG.ACHIEVEMENTS.COIN_TARGET} Münzen ohne zu sterben`,
             icon: '🪙',
             progress: 0,
-            target: 3,
+            target: CONFIG.ACHIEVEMENTS.COIN_TARGET,
             unlocked: false
         },
         {
@@ -1254,13 +1433,20 @@ const achievements = {
             description: 'Erreiche deinen ersten Gold-Rang',
             icon: '🏆',
             progress: 0,
+            target: CONFIG.ACHIEVEMENTS.GOLD_RANK_TARGET,
+            unlocked: false
+        },
+        {
+            id: 'speedhunter',
+            name: 'Blitzfänger',
+            description: 'Fange den rennenden MoMan in Level 4',
+            icon: '⚡',
+            progress: 0,
             target: 1,
             unlocked: false
         }
     ],
-    hard: [
-        // Placeholder for future hard achievements
-    ]
+    hard: []
 };
 
 let achievementData = {
@@ -1478,3 +1664,315 @@ function resetAllAchievements() {
         alert('Alle Achievements wurden zurückgesetzt!');
     }
 }
+
+// ===============================
+//   TXP Character Animation
+// ===============================
+class TXPCharacter {
+    constructor() {
+        this.img = document.querySelector('.txp-character-img');
+        this.character = document.getElementById('txpCharacter');
+        this.speechBubble = document.getElementById('txpSpeech');
+        this.speechText = document.getElementById('txpSpeechText');
+
+        this.currentFrame = 0;
+        this.totalFrames = 24; // Stand/Talk frames
+        this.laufFrames = 24; // Lauf animation frames
+        this.sprungFrames = 120; // Sprung animation frames
+
+        this.animationSpeed = 40; // milliseconds per frame (50% faster: 80 → 40)
+        this.speechAnimationSpeed = 42; // 70% of original: 60 → 42
+        this.laufAnimationSpeed = 36; // 40% faster: 60 → 36
+        this.sprungAnimationSpeed = 40; // jumping speed (unchanged)
+
+        this.animationInterval = null;
+        this.movementInterval = null;
+        this.isAnimating = false;
+        this.isSpeaking = false;
+        this.isMoving = false;
+        this.isJumping = false;
+
+        this.currentAnimation = 'stand'; // stand, talk, lauf, sprung
+        this.position = { x: 50, y: 60 }; // bottom left position
+        this.direction = 1; // 1 = right, -1 = left
+        this.movementDistance = 150; // pixels to move (reduced)
+
+        this.speeches = [
+            "Hey! Ich bin TXP, dein KI-Assistent! 🤖",
+            "Bereit für deine AI-Bytes Reise? 🚀",
+            "Diese Levels bringen dir AI richtig bei! 💡",
+            "Vergiss nicht: Übung macht den Meister! 💪",
+            "KI ist die Zukunft - und du bist dabei! ⭐",
+            "Klick mich wieder für mehr Motivation! 😊",
+            "Du schaffst das! Weiter so! 🎯",
+            "AI-Bytes macht KI lernen zum Vergnügen! 🎮",
+            "Benutze die Pfeiltasten um MoMan zu bewegen! ⬅️➡️⬆️⬇️",
+            "Klick auf das Logo für Überraschungen! ✨"
+        ];
+
+
+        this.init();
+    }
+
+    init() {
+        if (this.img && this.character) {
+            this.startStandAnimation();
+            this.character.addEventListener('click', () => this.speak());
+            this.setupLogoClick();
+            this.startAutomaticBehavior();
+        }
+    }
+
+    startAutomaticBehavior() {
+        // Start automatic movement every 8-15 seconds (much slower)
+        setInterval(() => {
+            if (!this.isSpeaking && !this.isMoving && !this.isJumping) {
+                if (Math.random() < 0.3) {
+                    this.jump();
+                } else {
+                    this.moveRandomly();
+                }
+            }
+        }, 8000 + Math.random() * 7000);
+    }
+
+    setupLogoClick() {
+        const logos = document.querySelectorAll('.logo');
+        logos.forEach(logo => {
+            logo.addEventListener('click', () => {
+                this.logoClicked();
+            });
+            logo.style.cursor = 'pointer';
+        });
+    }
+
+    logoClicked() {
+        const logoSpeeches = [
+            "Du hast das AI-Bytes Logo entdeckt! 🎯",
+            "AI-Bytes - Deine Zukunft beginnt hier! 🚀",
+            "Willkommen in der Welt der künstlichen Intelligenz! 🤖",
+            "Logo-Geheimnis entdeckt! Du bist aufmerksam! 👁️",
+            "AI-Bytes: Wo Lernen auf Innovation trifft! ⚡"
+        ];
+
+        if (!this.isSpeaking) {
+            const randomLogoSpeech = logoSpeeches[Math.floor(Math.random() * logoSpeeches.length)];
+            this.speechBubble.style.display = 'block';
+            this.startSpeechAnimation();
+            this.typewriterEffect(randomLogoSpeech);
+        }
+    }
+
+    startStandAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+
+        this.currentAnimation = 'stand';
+        this.isAnimating = true;
+        this.currentFrame = 0;
+
+        this.animationInterval = setInterval(() => {
+            const frameNumber = String(this.currentFrame).padStart(5, '0');
+            this.img.src = `TXP/TXP_Stand_Pose/TXP Stand Pose_${frameNumber}.png`;
+
+            this.currentFrame = (this.currentFrame + 1) % this.totalFrames;
+        }, this.animationSpeed);
+    }
+
+    startSpeechAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+
+        this.currentAnimation = 'talk';
+        this.isSpeaking = true;
+        this.isAnimating = true;
+        this.currentFrame = 0;
+
+        this.animationInterval = setInterval(() => {
+            const frameNumber = String(this.currentFrame).padStart(5, '0');
+            this.img.src = `TXP/TXP_Talk_Pose/TXP_Talk Pose_${frameNumber}.png`;
+
+            this.currentFrame = (this.currentFrame + 1) % this.totalFrames;
+        }, this.speechAnimationSpeed);
+    }
+
+    startLaufAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+
+        this.currentAnimation = 'lauf';
+        this.isAnimating = true;
+        this.currentFrame = 0;
+
+        this.animationInterval = setInterval(() => {
+            const frameNumber = String(this.currentFrame).padStart(5, '0');
+            this.img.src = `TXP/TXP_Lauf_Pose/TXP Lauf Loop_${frameNumber}.png`;
+
+            this.currentFrame = (this.currentFrame + 1) % this.laufFrames;
+        }, this.laufAnimationSpeed);
+    }
+
+    startSprungAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+
+        this.currentAnimation = 'sprung';
+        this.isJumping = true;
+        this.isAnimating = true;
+        this.currentFrame = 0;
+
+        this.animationInterval = setInterval(() => {
+            const frameNumber = String(this.currentFrame).padStart(5, '0');
+
+            // Handle special filenames for frames 14 and 15
+            let filename;
+            if (this.currentFrame === 14) {
+                filename = `TXP/TXP_Sprung_Pose/TXP Sprung_${frameNumber}A.png`;
+            } else if (this.currentFrame === 15) {
+                filename = `TXP/TXP_Sprung_Pose/TXP Sprung_${frameNumber}B.png`;
+            } else {
+                filename = `TXP/TXP_Sprung_Pose/TXP Sprung_${frameNumber}.png`;
+            }
+
+            this.img.src = filename;
+
+            this.currentFrame++;
+            if (this.currentFrame >= this.sprungFrames) {
+                // Jump animation finished, return to stand
+                this.isJumping = false;
+                // Don't call startStandAnimation() here - just set the first stand frame directly
+                clearInterval(this.animationInterval);
+                this.currentAnimation = 'stand';
+                this.currentFrame = 0;
+                this.img.src = `TXP/TXP_Stand_Pose/TXP Stand Pose_00000.png`;
+
+                // Start normal stand animation after a brief delay
+                setTimeout(() => {
+                    this.startStandAnimation();
+                }, this.animationSpeed);
+            }
+        }, this.sprungAnimationSpeed);
+    }
+
+    speak() {
+        if (this.isSpeaking) return; // Prevent overlapping speeches
+
+        // Show speech bubble with typewriter effect
+        const randomSpeech = this.speeches[Math.floor(Math.random() * this.speeches.length)];
+        this.speechBubble.style.display = 'block';
+
+        // Start speech animation
+        this.startSpeechAnimation();
+
+        // Start typewriter effect
+        this.typewriterEffect(randomSpeech);
+    }
+
+    typewriterEffect(text) {
+        this.speechText.textContent = '';
+        let charIndex = 0;
+        const typingSpeed = 50; // milliseconds per character
+
+        const typeChar = () => {
+            if (charIndex < text.length) {
+                this.speechText.textContent += text.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeChar, typingSpeed);
+            } else {
+                // Add blinking cursor at the end
+                this.speechText.innerHTML += '<span class="typing-cursor"></span>';
+
+                // Hide speech bubble and return to stand animation after text is complete
+                setTimeout(() => {
+                    this.speechBubble.style.display = 'none';
+                    this.isSpeaking = false;
+                    this.startStandAnimation();
+                }, 2000); // Show complete text for 2 seconds
+            }
+        };
+
+        typeChar();
+    }
+
+    moveRandomly() {
+        if (this.isMoving || this.isSpeaking || this.isJumping) return;
+
+        this.isMoving = true;
+        this.direction = Math.random() < 0.5 ? 1 : -1; // Random direction
+        const targetX = this.position.x + (this.direction * this.movementDistance);
+
+        // Ensure we don't move off screen (more restrictive on the right)
+        const maxRightPosition = Math.min(window.innerWidth - 300, 400); // Don't go too far right
+        const clampedX = Math.max(20, Math.min(maxRightPosition, targetX));
+        this.direction = clampedX > this.position.x ? 1 : -1;
+
+        // Update CSS transform for direction
+        this.updateDirection();
+
+        // Start lauf animation
+        this.startLaufAnimation();
+
+        // Move TXP smoothly
+        const moveStep = 2; // pixels per step
+        const moveInterval = setInterval(() => {
+            if (this.direction === 1) {
+                this.position.x += moveStep;
+                if (this.position.x >= clampedX) {
+                    this.position.x = clampedX;
+                    this.finishMovement(moveInterval);
+                }
+            } else {
+                this.position.x -= moveStep;
+                if (this.position.x <= clampedX) {
+                    this.position.x = clampedX;
+                    this.finishMovement(moveInterval);
+                }
+            }
+
+            this.updatePosition();
+        }, 20);
+    }
+
+    updateDirection() {
+        if (this.direction === -1) {
+            this.img.style.transform = 'scaleX(-1)'; // Face left
+        } else {
+            this.img.style.transform = 'scaleX(1)'; // Face right
+        }
+    }
+
+    updatePosition() {
+        this.character.parentElement.style.left = this.position.x + 'px';
+        this.character.parentElement.style.bottom = this.position.y + 'px';
+    }
+
+    finishMovement(moveInterval) {
+        clearInterval(moveInterval);
+        this.isMoving = false;
+        this.startStandAnimation();
+    }
+
+    jump() {
+        if (this.isJumping || this.isSpeaking || this.isMoving) return;
+        this.startSprungAnimation();
+    }
+
+    stopAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+            this.animationInterval = null;
+        }
+        this.isAnimating = false;
+        this.currentAnimation = 'stand';
+    }
+}
+
+// Initialize TXP Character when page loads
+let txpCharacter;
+document.addEventListener('DOMContentLoaded', function() {
+    txpCharacter = new TXPCharacter();
+});

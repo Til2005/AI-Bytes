@@ -920,3 +920,123 @@ span.highlighted {
         padding: 15px;
     }
 }
+
+/* ===============================
+   TXP Character
+   =============================== */
+.txp-character-container {
+    position: fixed;
+    bottom: 60px;
+    left: 50px;
+    z-index: 100;
+}
+
+.txp-character {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.txp-character:hover {
+    transform: scale(1.05);
+}
+
+.txp-character-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+}
+
+.txp-speech-bubble {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95));
+    border: 2px solid rgba(148, 163, 184, 0.3);
+    border-radius: 16px;
+    padding: 18px 24px;
+    max-width: 600px;
+    min-height: 60px;
+    position: absolute;
+    bottom: 140px;
+    left: 0;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    animation: bubbleAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-left: 4px solid #3b82f6;
+}
+
+.txp-speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+    border-radius: inherit;
+    animation: shimmer 3s infinite;
+}
+
+.txp-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgba(30, 41, 59, 0.95);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.txp-speech-bubble p {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@keyframes bubbleAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(15px);
+    }
+    60% {
+        transform: scale(1.02) translateY(-2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(400%) rotate(45deg); }
+}
+
+.txp-speech-bubble .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background: #3b82f6;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}

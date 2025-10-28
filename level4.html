@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Bytes Level 4 - Auch Bilder sind kein Problem</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="level4.css">
+</head>
+<body>
+    <div class="level4-container">
+        <!-- Game Header -->
+        <header class="vision-header">
+            <div class="level-info">
+                <h1 class="level-title">Level 4: Auch Bilder sind kein Problem</h1>
+                <p class="level-subtitle">Meistere die Kunst der KI-Bildverarbeitung!</p>
+            </div>
+            <div class="vision-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Challenge:</span>
+                    <span id="currentChallenge" class="stat-value">1/4</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Score:</span>
+                    <span id="totalScore" class="stat-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mo Man Game Host -->
+        <div class="mo-host-container">
+            <div id="moHost" class="mo-host">
+                <img src="Mo_man_Stand_Pose/Mo man Stand Pose_00000.png" alt="Mo Man Host" class="mo-host-img">
+            </div>
+            <div class="mo-speech-bubble" id="moSpeech">
+                <p>Hey! Bereit für die Welt der KI-Bilder? Ich zeig dir, wie's geht!</p>
+                <button id="understoodButton" class="understood-btn" style="display: none;">Verstanden</button>
+            </div>
+        </div>
+
+        <!-- TXP Robot Assistant -->
+        <div class="txp-host-container">
+            <div id="txpHost" class="txp-host">
+                <img src="TXP/TXP_Stand_Pose/TXP Stand Pose_00000.png" alt="TXP Robot" class="txp-host-img">
+            </div>
+            <div class="txp-speech-bubble" id="txpSpeech" style="display: none;">
+                <p>Beep boop! Als KI-Roboter kenne ich mich mit Bildern aus! 🤖</p>
+            </div>
+        </div>
+
+        <!-- Introduction Screen -->
+        <div id="introScreen" class="game-screen active">
+            <div class="intro-content">
+                <div class="vision-intro">
+                    <h2>Willkommen im Bild-Labor!</h2>
+                    <p class="intro-description">KI kann nicht nur Text verstehen - sie kann auch Bilder analysieren, beschreiben und generieren!</p>
+
+                    <div class="intro-topics">
+                        <h3>Was du lernen wirst:</h3>
+                        <div class="topic-grid">
+                            <div class="topic-card">
+                                <div class="topic-icon">📝</div>
+                                <div class="topic-title">Bild-Prompts</div>
+                                <div class="topic-desc">Gute vs. schlechte Beschreibungen</div>
+                            </div>
+                            <div class="topic-card">
+                                <div class="topic-icon">🔍</div>
+                                <div class="topic-title">Prompt-Analyse</div>
+                                <div class="topic-desc">Welcher Prompt passt zum Bild?</div>
+                            </div>
+                            <div class="topic-card">
+                                <div class="topic-icon">🎨</div>
+                                <div class="topic-title">Bild-Matching</div>
+                                <div class="topic-desc">Finde das richtige generierte Bild</div>
+                            </div>
+                            <div class="topic-card">
+                                <div class="topic-icon">✨</div>
+                                <div class="topic-title">Real vs. KI</div>
+                                <div class="topic-desc">Erkenne echte Fotos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scoring-info">
+                        <h3>Punktesystem:</h3>
+                        <div class="rank-requirements">
+                            <div class="rank-item gold-rank">
+                                <span class="rank-icon">🥇</span>
+                                <span class="rank-name">Gold</span>
+                                <span class="rank-points">40 Punkte</span>
+                            </div>
+                            <div class="rank-item silver-rank">
+                                <span class="rank-icon">🥈</span>
+                                <span class="rank-name">Silber</span>
+                                <span class="rank-points">30 Punkte</span>
+                            </div>
+                            <div class="rank-item bronze-rank">
+                                <span class="rank-icon">🥉</span>
+                                <span class="rank-name">Bronze</span>
+                                <span class="rank-points">20 Punkte</span>
+                            </div>
+                        </div>
+                        <p class="points-note">Jede richtige Antwort gibt 10 Punkte!</p>
+                    </div>
+
+                    <button id="startLevel" class="vision-start-btn">Level starten 🚀</button>
+                    <button id="backToHome" class="vision-back-btn">Zurück zur Levelauswahl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge 1: Guter vs. Schlechter Prompt -->
+        <div id="challenge1Screen" class="game-screen">
+            <div class="challenge-container">
+                <div class="challenge-header">
+                    <h2>Challenge 1: Prompt-Qualität erkennen</h2>
+                    <p class="challenge-instruction">Du willst dieses Bild generieren. Welcher Prompt ist besser?</p>
+                </div>
+
+                <div class="challenge-content split-layout">
+                    <!-- Target Image -->
+                    <div class="target-section">
+                        <h3>Ziel-Bild:</h3>
+                        <div class="image-container">
+                            <img id="challenge1Image" src="assets/level4/placeholder_target.png" alt="Ziel-Bild" class="challenge-image">
+                            <div class="image-placeholder">
+                                <div class="placeholder-icon">🖼️</div>
+                                <div class="placeholder-text">Bild wird geladen...</div>
+                            </div>
+                        </div>
+                        <p class="image-caption" id="challenge1Caption">Beschreibung: Ein futuristisches Mercedes-Konzeptauto</p>
+                    </div>
+
+                    <!-- Prompt Options -->
+                    <div class="options-section">
+                        <h3>Wähle den besseren Prompt:</h3>
+                        <div class="prompt-options">
+                            <div class="prompt-card" data-prompt="bad">
+                                <div class="prompt-label bad-prompt">Prompt A</div>
+                                <div class="prompt-text" id="challenge1PromptA">
+                                    Ein Auto
+                                </div>
+                                <button class="select-prompt-btn" onclick="selectPrompt(1, 'A')">Diesen wählen</button>
+                            </div>
+                            <div class="prompt-card" data-prompt="good">
+                                <div class="prompt-label good-prompt">Prompt B</div>
+                                <div class="prompt-text" id="challenge1PromptB">
+                                    Futuristisches Mercedes Vision AVTR Konzeptauto, silberne Lackierung, in modernem Showroom mit LED-Beleuchtung, Studiofotografie, Weitwinkel-Aufnahme, 4K hochauflösend
+                                </div>
+                                <button class="select-prompt-btn" onclick="selectPrompt(1, 'B')">Diesen wählen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge 2: Welcher Prompt erzeugte dieses Bild? -->
+        <div id="challenge2Screen" class="game-screen">
+            <div class="challenge-container">
+                <div class="challenge-header">
+                    <h2>Challenge 2: Prompt zum Bild finden</h2>
+                    <p class="challenge-instruction">Welcher Prompt wurde verwendet, um dieses Bild zu generieren?</p>
+                </div>
+
+                <div class="challenge-content centered-layout">
+                    <!-- Generated Image -->
+                    <div class="main-image-section">
+                        <div class="image-container large">
+                            <img id="challenge2Image" src="assets/level4/placeholder_generated.png" alt="Generiertes Bild" class="challenge-image">
+                            <div class="image-placeholder">
+                                <div class="placeholder-icon">🎨</div>
+                                <div class="placeholder-text">KI-generiertes Bild</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Options -->
+                    <div class="prompt-grid">
+                        <div class="prompt-option" onclick="selectPromptOption(2, 1)">
+                            <div class="option-letter">A</div>
+                            <div class="option-text" id="challenge2Option1">
+                                Mercedes EQS auf einer Landstraße, sonniger Tag
+                            </div>
+                        </div>
+                        <div class="prompt-option" onclick="selectPromptOption(2, 2)">
+                            <div class="option-letter">B</div>
+                            <div class="option-text" id="challenge2Option2">
+                                Mercedes EQS in Cyberpunk-Stadt bei Nacht, Neonlichter, futuristisch, Regen auf Straße, kinoreifer Look
+                            </div>
+                        </div>
+                        <div class="prompt-option" onclick="selectPromptOption(2, 3)">
+                            <div class="option-letter">C</div>
+                            <div class="option-text" id="challenge2Option3">
+                                Schwarzes Auto in der Stadt
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge 3: Welches Bild passt zum Prompt? -->
+        <div id="challenge3Screen" class="game-screen">
+            <div class="challenge-container">
+                <div class="challenge-header">
+                    <h2>Challenge 3: Bild zum Prompt finden</h2>
+                    <p class="challenge-instruction">Welches Bild wurde mit diesem Prompt generiert?</p>
+                </div>
+
+                <div class="challenge-content">
+                    <!-- Prompt Display -->
+                    <div class="prompt-display">
+                        <div class="prompt-label-main">Der Prompt:</div>
+                        <div class="prompt-text-main" id="challenge3Prompt">
+                            Mercedes G-Klasse in der Wüste, goldene Stunde, Sanddünen im Hintergrund, dramatische Beleuchtung, professionelle Fotografie
+                        </div>
+                    </div>
+
+                    <!-- Image Options Grid -->
+                    <div class="image-grid three-cols">
+                        <div class="image-option" onclick="selectImageOption(3, 1)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_option1.png" alt="Option 1" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">🖼️</div>
+                                    <div class="placeholder-text">Bild A</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild A</div>
+                        </div>
+                        <div class="image-option" onclick="selectImageOption(3, 2)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_option2.png" alt="Option 2" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">🖼️</div>
+                                    <div class="placeholder-text">Bild B</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild B</div>
+                        </div>
+                        <div class="image-option" onclick="selectImageOption(3, 3)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_option3.png" alt="Option 3" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">🖼️</div>
+                                    <div class="placeholder-text">Bild C</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge 4: Real vs. KI -->
+        <div id="challenge4Screen" class="game-screen">
+            <div class="challenge-container">
+                <div class="challenge-header">
+                    <h2>Challenge 4: Echtes Foto erkennen</h2>
+                    <p class="challenge-instruction">Welches dieser 3 Bilder ist ein echtes Foto (nicht KI-generiert)?</p>
+                </div>
+
+                <div class="challenge-content">
+                    <div class="detection-hint">
+                        <div class="hint-icon">💡</div>
+                        <div class="hint-text">Tipp: Achte auf Details wie Hände, Text, Schatten und Proportionen!</div>
+                    </div>
+
+                    <!-- Image Options Grid -->
+                    <div class="image-grid three-cols">
+                        <div class="image-option real-check" onclick="selectRealImage(4, 1)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_real1.png" alt="Bild 1" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">📷</div>
+                                    <div class="placeholder-text">Bild 1</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild 1</div>
+                            <div class="ai-indicator">🤖 KI oder 📸 Real?</div>
+                        </div>
+                        <div class="image-option real-check" onclick="selectRealImage(4, 2)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_real2.png" alt="Bild 2" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">📷</div>
+                                    <div class="placeholder-text">Bild 2</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild 2</div>
+                            <div class="ai-indicator">🤖 KI oder 📸 Real?</div>
+                        </div>
+                        <div class="image-option real-check" onclick="selectRealImage(4, 3)">
+                            <div class="image-option-container">
+                                <img src="assets/level4/placeholder_real3.png" alt="Bild 3" class="option-image">
+                                <div class="image-placeholder small">
+                                    <div class="placeholder-icon">📷</div>
+                                    <div class="placeholder-text">Bild 3</div>
+                                </div>
+                            </div>
+                            <div class="option-label">Bild 3</div>
+                            <div class="ai-indicator">🤖 KI oder 📸 Real?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="game-screen">
+            <div class="results-container">
+                <div class="results-header">
+                    <h2>Level abgeschlossen!</h2>
+                </div>
+
+                <div class="results-content">
+                    <!-- Score Display -->
+                    <div class="final-score-display">
+                        <div class="score-circle">
+                            <div class="score-number" id="finalScore">0</div>
+                            <div class="score-total">/ 40</div>
+                        </div>
+                    </div>
+
+                    <!-- Rank Display -->
+                    <div class="rank-display">
+                        <div class="rank-badge" id="finalRank">
+                            <div class="rank-icon-large">🥇</div>
+                            <div class="rank-name-large">Gold Rang</div>
+                        </div>
+                        <p class="rank-message" id="rankMessage">Perfekt! Du bist ein KI-Bild-Meister!</p>
+                    </div>
+
+                    <!-- Challenge Breakdown -->
+                    <div class="challenge-breakdown">
+                        <h3>Deine Ergebnisse:</h3>
+                        <div class="breakdown-grid">
+                            <div class="breakdown-item" id="breakdown1">
+                                <div class="breakdown-icon">📝</div>
+                                <div class="breakdown-title">Challenge 1</div>
+                                <div class="breakdown-score">✓ 10/10</div>
+                            </div>
+                            <div class="breakdown-item" id="breakdown2">
+                                <div class="breakdown-icon">🔍</div>
+                                <div class="breakdown-title">Challenge 2</div>
+                                <div class="breakdown-score">✓ 10/10</div>
+                            </div>
+                            <div class="breakdown-item" id="breakdown3">
+                                <div class="breakdown-icon">🎨</div>
+                                <div class="breakdown-title">Challenge 3</div>
+                                <div class="breakdown-score">✓ 10/10</div>
+                            </div>
+                            <div class="breakdown-item" id="breakdown4">
+                                <div class="breakdown-icon">✨</div>
+                                <div class="breakdown-title">Challenge 4</div>
+                                <div class="breakdown-score">✓ 10/10</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="results-actions">
+                        <button id="retryLevel" class="results-btn retry-btn">Nochmal spielen</button>
+                        <button id="backToLevels" class="results-btn home-btn">Zur Levelauswahl</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="level4.js"></script>
+</body>
+</html>

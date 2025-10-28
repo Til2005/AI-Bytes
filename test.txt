@@ -1,2 +1,0 @@
-This is a test file to verify GitHub Pages deployment.
-Created at: 2025-10-24 12:30
