@@ -10,9 +10,6 @@
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-buttons">
-                <button class="back-btn" onclick="window.location.href='index.html'">← Zurück zur Levelauswahl</button>
-            </div>
             <div class="logo-container">
                 <img src="logo_horizontal_dark.png" alt="AI Bytes Logo" class="logo logo-dark">
                 <img src="logo_horizontal_white.png" alt="AI Bytes Logo" class="logo logo-white">
@@ -32,25 +29,28 @@
 
         <main class="game-container">
             <!-- Game HUD -->
-            <div class="game-hud">
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+            <div class="hud-wrapper">
+                <div class="game-hud">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">Challenge 1/5</span>
                     </div>
-                    <span class="progress-text" id="progressText">Challenge 1/5</span>
+                    <div class="score-container">
+                        <span class="score-label">Score:</span>
+                        <span class="score-value" id="scoreValue">0</span>
+                    </div>
                 </div>
-                <div class="score-container">
-                    <span class="score-label">Score:</span>
-                    <span class="score-value" id="scoreValue">0</span>
-                </div>
+                <span class="rank-badge" id="rankBadge" style="display: none;"></span>
             </div>
 
             <!-- Game Intro Screen -->
             <div class="game-screen active" id="introScreen">
                 <div class="intro-content">
-                    <h1 class="game-title">Level 1: Nicht suchen, Prompten!</h1>
+                    <h1 class="game-title">Level: Nicht suchen, Prompten!</h1>
                     <p class="game-description">Lerne in 5 spannenden Challenges, wie du AI richtig "promptest"!</p>
-                    <button class="start-button" onclick="startGame()">🚀 Spiel starten!</button>
+                    <button class="start-button" onclick="startGame()">Spiel starten!</button>
                 </div>
             </div>
 
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="tutorial-actions">
-                        <button class="understand-button" onclick="startChallenge()">✅ Verstanden! Challenge starten</button>
+                        <button class="understand-button" onclick="startChallenge()">Verstanden! Challenge starten</button>
                     </div>
                 </div>
             </div>
@@ -103,12 +103,11 @@
                                     <p>AI denkt nach...</p>
                                 </div>
                             </div>
+                            <div class="ai-response-buttons">
+                                <button class="submit-button" id="submitButton" onclick="submitPrompt()">Prompt senden</button>
+                                <button class="hint-button" onclick="showHint()">Tipp</button>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="challenge-actions">
-                        <button class="submit-button" onclick="submitPrompt()">📤 Prompt senden</button>
-                        <button class="hint-button" onclick="showHint()">💡 Tipp</button>
                     </div>
 
                     <div class="hint-box" id="hintBox">
@@ -134,7 +133,7 @@
                     </div>
 
                     <div class="results-actions">
-                        <button class="continue-button" onclick="nextChallenge()">▶️ Weiter</button>
+                        <button class="continue-button" onclick="nextChallenge()">Weiter</button>
                     </div>
                 </div>
             </div>
@@ -156,17 +155,16 @@
                         <div class="rank-requirements">
                             <h3>🏆 Rang-Anforderungen:</h3>
                             <div class="requirements-list">
-                                <div class="requirement bronze">🥉 Bronze: 25-39 Punkte</div>
-                                <div class="requirement silver">🥈 Silber: 40-49 Punkte</div>
-                                <div class="requirement gold">🥇 Gold: 50 Punkte</div>
+                                <div class="requirement bronze">Bronze: 25-39 Punkte</div>
+                                <div class="requirement silver">Silber: 40-49 Punkte</div>
+                                <div class="requirement gold">Gold: 50 Punkte</div>
                             </div>
                         </div>
                     </div>
 
 
                     <div class="completion-actions">
-                        <button class="replay-button" onclick="restartGame()">🔄 Nochmal spielen</button>
-                        <a href="index.html" class="home-button">🏠 Zur Levelauswahl</a>
+                        <button class="replay-button" onclick="restartGame()">Nochmal spielen</button>
                     </div>
                 </div>
             </div>
