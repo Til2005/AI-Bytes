@@ -11,8 +11,10 @@ class MoManHost {
         this.currentFrame = 0;
         this.celebrationFrames = 23;
         this.speechFrames = 12; // 00000 to 00011
+        this.runFrames = 48; // Running animation frames
         this.animationSpeed = 40;
         this.speechAnimationSpeed = 80; // Separate speed for speech animation
+        this.runAnimationSpeed = 18; // Even faster running animation (~55fps)
         this.animationInterval = null;
         this.speechTimeout = null;
 
@@ -23,6 +25,7 @@ class MoManHost {
         this.typewriterSpeed = 30; // milliseconds per character
 
         this.isIdle = true;
+        this.isRunning = false; // Track if Mo Man is running
 
         // Interactive features
         this.autoSpeechTimer = null;
@@ -35,6 +38,7 @@ class MoManHost {
         this.startIdleAnimation();
         this.setupUnderstoodButton();
         this.startAutoSpeech();
+        this.setupEasterEgg(); // Easter egg click handler
     }
 
     startIdleAnimation() {
@@ -307,6 +311,80 @@ class MoManHost {
         this.speak(randomEncouragement);
     }
 
+    // Easter Egg: Click Mo Man to make him run
+    setupEasterEgg() {
+        this.element.style.cursor = 'pointer';
+        this.element.addEventListener('click', () => {
+            if (!this.isRunning) {
+                this.startRunningEasterEgg();
+            }
+        });
+    }
+
+    startRunningEasterEgg() {
+        if (this.isRunning) return;
+
+        this.isRunning = true;
+        this.stopAnimation();
+        this.stopSpeaking();
+
+        const container = this.element.parentElement;
+        const startPosition = 60; // left: 60px (original position)
+        const screenWidth = window.innerWidth;
+
+        // Phase 1: Run to the right off-screen
+        this.startRunAnimation();
+        this.animatePosition(startPosition, screenWidth + 200, 2500, () => {
+            // Phase 2: Jump to left side off-screen
+            container.style.left = '-200px';
+
+            // Phase 3: Run back to original position from left
+            this.animatePosition(-200, startPosition, 2500, () => {
+                // Back to idle
+                this.isRunning = false;
+                this.startIdleAnimation();
+            });
+        });
+    }
+
+    startRunAnimation() {
+        this.stopAnimation();
+        this.isIdle = false;
+
+        this.animationInterval = setInterval(() => {
+            this.currentFrame = (this.currentFrame + 1) % this.runFrames;
+            const frameNumber = String(this.currentFrame).padStart(5, '0');
+            this.img.src = `Mo man Lauf 2s 24fps 48 frames/Mo man Lauf Pose_${frameNumber}.png`;
+        }, this.runAnimationSpeed);
+    }
+
+    animatePosition(startPos, endPos, duration, callback) {
+        const container = this.element.parentElement;
+        const startTime = Date.now();
+        const distance = endPos - startPos;
+
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease-in-out function for smooth movement
+            const easeProgress = progress < 0.5
+                ? 2 * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+            const currentPos = startPos + (distance * easeProgress);
+            container.style.left = currentPos + 'px';
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                if (callback) callback();
+            }
+        };
+
+        animate();
+    }
+
     destroy() {
         this.stopAnimation();
         if (this.speechTimeout) {
@@ -332,18 +410,18 @@ const MAX_CHALLENGES = 5; // Anzahl der Challenges pro Spiel
 const tutorials = [
     {
         id: 1,
-        title: "📚 Prompting-Grundlagen",
+        title: "Tutorial",
         concept: "Die 3 goldenen Regeln für bessere AI-Prompts",
         examples: [
             {
-                situation: "📧 E-Mail an Team: Meeting morgen fällt aus",
+                situation: "Beispiel 1: E-Mail an Team: Meeting morgen fällt aus",
                 badPrompt: "Schreibe eine E-Mail über ein Meeting",
                 whyBad: "Viel zu vage - welches Meeting? Was soll kommuniziert werden?",
                 goodPrompt: "E-Mail an mein Team: Meeting morgen 10 Uhr fällt aus, wird auf nächste Woche verschoben. Ton: kurz und klar.",
                 whyGood: "Spezifisch: Empfänger, Inhalt, Ton definiert."
             },
             {
-                situation: "📱 WhatsApp-Nachricht für Kollegen",
+                situation: "Beispiel 2: WhatsApp-Nachricht für Kollegen",
                 badPrompt: "Du bist ein zertifizierter Business Communication Expert mit 25 Jahren Erfahrung in interner Unternehmenskommunikation...",
                 whyBad: "Übertrieben! WhatsApp-Nachricht braucht keinen 'Expert'.",
                 goodPrompt: "WhatsApp an Kollegen: Drucker in Raum 3 ist kaputt, nutzt bitte Raum 5. Freundlich und kurz.",
@@ -706,10 +784,12 @@ function showTutorial() {
     // Update tutorial content
     document.getElementById('tutorialTitle').textContent = tutorial.title;
     document.getElementById('tutorialConcept').textContent = tutorial.concept;
-    document.getElementById('tutorialPrinciple').textContent = tutorial.principle;
 
     // Create examples
     createTutorialExamples(tutorial);
+
+    // Create golden rule cards
+    createGoldenRules();
 
     // Update progress
     updateProgress();
@@ -743,6 +823,38 @@ function createTutorialExamples(tutorial) {
     });
 }
 
+function createGoldenRules() {
+    const container = document.getElementById('goldenRules');
+    container.innerHTML = '';
+
+    const rules = [
+        {
+            number: 1,
+            title: "Situation klar definieren"
+        },
+        {
+            number: 2,
+            title: "Angemessene Komplexität"
+        },
+        {
+            number: 3,
+            title: "Konkretes Ziel"
+        }
+    ];
+
+    rules.forEach((rule) => {
+        const ruleCard = document.createElement('div');
+        ruleCard.className = 'golden-rule-card';
+
+        ruleCard.innerHTML = `
+            <div class="golden-rule-number">Regel ${rule.number}:</div>
+            <div class="golden-rule-title">${rule.title}</div>
+        `;
+
+        container.appendChild(ruleCard);
+    });
+}
+
 function startChallenge() {
     gameState = 'challenge';
 
@@ -761,6 +873,9 @@ function showChallenge() {
 
     const challenge = selectedChallenges[currentChallenge];
 
+    // Reset current prompt index for new challenge
+    currentPromptIndex = null;
+
     // Hide all screens
     document.querySelectorAll('.game-screen').forEach(screen => {
         screen.classList.remove('active');
@@ -772,7 +887,16 @@ function showChallenge() {
     // Update challenge content - Replace challenge number with current position (1-5)
     const displayNumber = currentChallenge + 1;
     const titleWithCorrectNumber = challenge.title.replace(/Challenge \d+:/, `Challenge ${displayNumber}:`);
-    document.getElementById('challengeTitle').textContent = titleWithCorrectNumber;
+
+    // Wrap each character in a span for individual hover animation
+    const titleElement = document.getElementById('challengeTitle');
+    titleElement.innerHTML = titleWithCorrectNumber.split('').map(char => {
+        if (char === ' ') {
+            return '<span class="letter-space">&nbsp;</span>';
+        }
+        return `<span class="letter-char">${char}</span>`;
+    }).join('');
+
     document.getElementById('challengeDescription').textContent = challenge.description;
 
     // Update progress
@@ -822,8 +946,47 @@ function createPromptOptions(challenge) {
             option.classList.add('selected');
             option.querySelector('input[type="radio"]').checked = true;
 
-            // Enable submit button
-            enableSubmitButton();
+            // Check if AI response has already been shown
+            const submitButton = document.getElementById('submitButton');
+            const selectedIndex = parseInt(option.querySelector('input[type="radio"]').value);
+
+            if (currentPromptIndex !== null) {
+                // AI response was already shown
+                if (selectedIndex === currentPromptIndex) {
+                    // Back to original prompt - show "Weiter"
+                    if (submitButton) {
+                        submitButton.textContent = 'Weiter';
+                        submitButton.style.visibility = 'visible';
+                        submitButton.classList.remove('enabled', 'disabled');
+                        submitButton.classList.add('continue-btn-style');
+                        submitButton.disabled = false;
+                        submitButton.style.opacity = '1';
+                        submitButton.style.cursor = 'pointer';
+                        submitButton.onclick = () => {
+                            submitButton.disabled = true;
+                            submitButton.style.opacity = '0.6';
+                            submitButton.style.cursor = 'not-allowed';
+                            const chosenPrompt = selectedChallenges[currentChallenge].prompts[currentPromptIndex];
+                            showResults(chosenPrompt.score, chosenPrompt);
+                        };
+                    }
+                } else {
+                    // Different prompt selected - show "Prompt verändern"
+                    if (submitButton) {
+                        submitButton.textContent = 'Prompt verändern';
+                        submitButton.style.visibility = 'visible';
+                        submitButton.classList.add('enabled');
+                        submitButton.classList.remove('continue-btn-style', 'disabled');
+                        submitButton.disabled = false;
+                        submitButton.style.opacity = '1';
+                        submitButton.style.cursor = 'pointer';
+                        submitButton.onclick = submitPrompt;
+                    }
+                }
+            } else {
+                // Initial selection
+                enableSubmitButton();
+            }
         });
 
         container.appendChild(option);
@@ -848,6 +1011,8 @@ function disableSubmitButton() {
     }
 }
 
+let currentPromptIndex = null; // Track currently selected prompt
+
 function submitPrompt() {
     const selectedPrompt = document.querySelector('input[name="promptChoice"]:checked');
 
@@ -857,10 +1022,11 @@ function submitPrompt() {
     }
 
     const promptIndex = parseInt(selectedPrompt.value);
+    currentPromptIndex = promptIndex; // Store current prompt
     const chosenPrompt = selectedChallenges[currentChallenge].prompts[promptIndex];
     const score = chosenPrompt.score;
 
-    // Hide submit button (but keep space)
+    // Hide submit button temporarily
     const submitButton = document.getElementById('submitButton');
     if (submitButton) {
         submitButton.style.visibility = 'hidden';
@@ -868,9 +1034,8 @@ function submitPrompt() {
 
     // Show AI response with typing effect
     showAIResponse(chosenPrompt.response, () => {
-        setTimeout(() => {
-            showResults(score, chosenPrompt);
-        }, 1000);
+        // After AI response is shown, allow prompt change
+        enablePromptChange();
     });
 }
 
@@ -888,7 +1053,12 @@ function showAIResponse(response, callback) {
     }, 800);
 }
 
-function showContinueButton(callback) {
+function enablePromptChange() {
+    // Show continue button immediately
+    showContinueButton();
+}
+
+function showContinueButton() {
     // Replace submit button with continue button
     const submitButton = document.getElementById('submitButton');
     if (submitButton) {
@@ -905,7 +1075,8 @@ function showContinueButton(callback) {
             submitButton.style.opacity = '0.6';
             submitButton.style.cursor = 'not-allowed';
 
-            if (callback) callback();
+            const chosenPrompt = selectedChallenges[currentChallenge].prompts[currentPromptIndex];
+            showResults(chosenPrompt.score, chosenPrompt);
         };
     }
 }
@@ -1234,4 +1405,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Display rank badge if player has achieved a rank
     displayRankBadge();
+
+    // Add click animation to score value
+    const scoreElement = document.getElementById('scoreValue');
+    if (scoreElement) {
+        scoreElement.addEventListener('click', function() {
+            // Add ripple effect
+            scoreElement.classList.add('clicked');
+            setTimeout(() => {
+                scoreElement.classList.remove('clicked');
+            }, 600);
+
+            // Add celebrate animation
+            scoreElement.classList.add('celebrate');
+            setTimeout(() => {
+                scoreElement.classList.remove('celebrate');
+            }, 800);
+        });
+    }
 });

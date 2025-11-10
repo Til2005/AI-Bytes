@@ -2,100 +2,20 @@
 
 /* Force Level 1 background image */
 body {
-    background-image: url('assets/images/Level1_bg.png') !important;
+    background-image: url('assets/images/html hintergrund.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-attachment: fixed !important;
 }
 
-/* Level 1 Page Border for Rise Integration - Jagged Design */
+/* Level 1 Page Border - Removed Jagged Design */
 body {
     position: relative;
     min-height: 100vh;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-}
-
-/* Jagged Border Effect using pseudo-elements */
-body::before,
-body::after {
-    content: '';
-    position: fixed;
-    background: #151037;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-/* Top and Bottom Borders with Jagged Edge */
-body::before {
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    clip-path: polygon(
-        0 0, 100% 0, 100% 100%,
-        98% 85%, 95% 100%, 92% 80%, 89% 100%, 86% 85%, 83% 100%, 80% 90%,
-        77% 100%, 74% 85%, 71% 100%, 68% 80%, 65% 100%, 62% 85%, 59% 100%,
-        56% 90%, 53% 100%, 50% 85%, 47% 100%, 44% 80%, 41% 100%, 38% 85%,
-        35% 100%, 32% 90%, 29% 100%, 26% 85%, 23% 100%, 20% 80%, 17% 100%,
-        14% 85%, 11% 100%, 8% 90%, 5% 100%, 2% 85%, 0 100%
-    );
-}
-
-body::after {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    clip-path: polygon(
-        0 100%, 100% 100%, 100% 0,
-        98% 15%, 95% 0, 92% 20%, 89% 0, 86% 15%, 83% 0, 80% 10%,
-        77% 0, 74% 15%, 71% 0, 68% 20%, 65% 0, 62% 15%, 59% 0,
-        56% 10%, 53% 0, 50% 15%, 47% 0, 44% 20%, 41% 0, 38% 15%,
-        35% 0, 32% 10%, 29% 0, 26% 15%, 23% 0, 20% 20%, 17% 0,
-        14% 15%, 11% 0, 8% 10%, 5% 0, 2% 15%, 0 0
-    );
-}
-
-/* Left and Right Borders */
-.container::before,
-.container::after {
-    content: '';
-    position: fixed;
-    background: #151037;
-    z-index: 9998;
-    pointer-events: none;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-}
-
-.container::before {
-    left: 0;
-    clip-path: polygon(
-        0 0, 100% 0,
-        85% 2%, 100% 5%, 80% 8%, 100% 11%, 85% 14%, 100% 17%, 90% 20%,
-        100% 23%, 85% 26%, 100% 29%, 80% 32%, 100% 35%, 85% 38%, 100% 41%,
-        90% 44%, 100% 47%, 85% 50%, 100% 53%, 80% 56%, 100% 59%, 85% 62%,
-        100% 65%, 90% 68%, 100% 71%, 85% 74%, 100% 77%, 80% 80%, 100% 83%,
-        85% 86%, 100% 89%, 90% 92%, 100% 95%, 85% 98%, 100% 100%,
-        0 100%
-    );
-}
-
-.container::after {
-    right: 0;
-    clip-path: polygon(
-        100% 0, 0 0,
-        15% 2%, 0 5%, 20% 8%, 0 11%, 15% 14%, 0 17%, 10% 20%,
-        0 23%, 15% 26%, 0 29%, 20% 32%, 0 35%, 15% 38%, 0 41%,
-        10% 44%, 0 47%, 15% 50%, 0 53%, 20% 56%, 0 59%, 15% 62%,
-        0 65%, 10% 68%, 0 71%, 15% 74%, 0 77%, 20% 80%, 0 83%,
-        15% 86%, 0 89%, 10% 92%, 0 95%, 15% 98%, 0 100%,
-        100% 100%
-    );
 }
 
 /* Compact Layout - No Scrolling */
@@ -247,6 +167,36 @@ html {
     min-width: 50px;
     text-align: center;
     transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.score-value::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.score-value:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(245, 192, 59, 0.8);
+}
+
+.score-value.clicked::before {
+    width: 300px;
+    height: 300px;
+}
+
+.score-value.celebrate {
+    animation: scoreClickCelebrate 0.8s ease;
 }
 
 .rank-badge {
@@ -401,6 +351,55 @@ html {
     line-height: 1.4;
 }
 
+/* Golden Rules Section */
+.golden-rules-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.golden-rule-card {
+    background: linear-gradient(145deg, rgba(245, 192, 59, 0.4), rgba(255, 215, 0, 0.3));
+    border: 3px solid var(--saffron);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 192, 59, 0.3);
+}
+
+.golden-rule-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(245, 192, 59, 0.6);
+    border-color: #FFD700;
+}
+
+.golden-rule-number {
+    color: var(--saffron);
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.golden-rule-title {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .golden-rules-section {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
 .principle-box {
     background: linear-gradient(145deg, rgba(245, 192, 59, 0.3), rgba(168, 106, 255, 0.2));
     border: 2px solid var(--saffron);
@@ -465,6 +464,7 @@ html {
     gap: 15px;
     transform: scale(0.9);
     transform-origin: bottom left;
+    transition: none; /* Disable CSS transition for JS animation control */
 }
 
 .mo-host {
@@ -571,12 +571,9 @@ html {
 .game-title {
     font-family: 'Ithaca', serif;
     font-size: 2rem;
-    background: linear-gradient(45deg, #00FF41, #00E676, #39FF14);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #F5C03B;
     margin-bottom: 10px;
-    text-shadow: 0 0 30px rgba(0, 255, 65, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 20px rgba(245, 192, 59, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .game-description {
@@ -626,6 +623,19 @@ html {
     font-size: 1.6rem;
     color: var(--saffron);
     margin-bottom: 8px;
+}
+
+.challenge-title .letter-char,
+.challenge-title .letter-space {
+    display: inline-block;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.challenge-title .letter-char:hover {
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(245, 192, 59, 0.7);
+    transform: scale(1.2);
 }
 
 .challenge-description {
@@ -742,17 +752,32 @@ html {
 
 .submit-button.disabled {
     background: #6b7280;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
     opacity: 0.6;
+    pointer-events: auto;
 }
 
 .submit-button.enabled {
-    background: linear-gradient(45deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    animation: buttonGlow 2s ease-in-out infinite;
 }
 
+@keyframes buttonGlow {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4), 0 0 20px rgba(118, 75, 162, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7), 0 0 40px rgba(240, 147, 251, 0.6);
+    }
+}
+
+
 .submit-button.enabled:hover {
-    background: linear-gradient(45deg, #2563eb, #1d4ed8);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6), 0 0 40px rgba(240, 147, 251, 0.4);
+    transform: translateY(-2px) scale(1.05);
 }
 
 .submit-button.continue-btn-style {
@@ -1114,6 +1139,24 @@ html {
     0% { transform: scale(1); }
     50% { transform: scale(1.3); background: var(--maya-blue); }
     100% { transform: scale(1); }
+}
+
+@keyframes scoreClickCelebrate {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.3) rotate(-5deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+    75% {
+        transform: scale(1.3) rotate(-5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
 }
 
 /* Responsive Design */
