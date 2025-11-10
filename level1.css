@@ -2,7 +2,7 @@
 
 /* Force Level 1 background image */
 body {
-    background-image: url('assets/images/html hintergrund.png') !important;
+    background-image: url('assets/images/html-hintergrund.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;

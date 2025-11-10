@@ -10,7 +10,12 @@
       "Bash(git remote add:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(grep:*)",
+      "Bash(start index.html)",
+      "Bash(start level4.html)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
